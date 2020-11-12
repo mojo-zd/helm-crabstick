@@ -1,0 +1,24 @@
+name: chart
+replicaCount: 1
+image: nginx:lates
+imagePullSecrets:
+- secretName
+services:
+- demo:
+    type: deployments
+    replicaCount: 1
+    imagePullPolicy: Always
+    podAnnotations: xxx
+    hostIPC: true
+    volumes:
+    - name: test
+      hostPath: /aaa/bbb
+    imagePullSecrets:
+    - name: secretName
+    resources:
+      limit:
+        cpu: 1
+        memory: 200Mi
+      request:
+        cpu: 500m
+        memory: 150Mi

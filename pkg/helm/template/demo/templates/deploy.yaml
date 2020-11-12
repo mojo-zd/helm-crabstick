@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ccc.fullname" . }}-demo
+  labels:
+    {{- include "ccc.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}1
+  selector:
+    matchLabels:
+      {{- include "ccc.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "ccc.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- if (index .Values.services 0).imagePullSecrets }}
+      imagePullSecrets:
+      {{- range (index .Values.services 0).demo.imagePullSecrets }}
+      - name: {{ . }}
+      {{- end }}
+      {{- else if .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- range .Values.imagePullSecrets }}
+      - name: {{ . }}
+      {{- end }}
+      {{- end }}
+      {{- if (index .Values.services 0).demo.hostIPC }}
+      hostIPC: {{ (index .Values.services 0).demo.hostIPC }}
+      {{- end }}
+      {{- if (index .Values.services 0).demo.volumes }}
+      {{- range (index .Values.services 0).demo.volumes }}
+      {{- end }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image }}"

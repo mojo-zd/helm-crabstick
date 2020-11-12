@@ -1,9 +1,6 @@
-package template
 
-const (
-	helperTemplate = `
 {{/*name定义*/}}
-{{- define "<CHARTNAME>.fullname" -}}
+{{- define "ccc.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -17,29 +14,27 @@ const (
 {{- end }}
 
 {{/*版本定义*/}}
-{{- define "<CHARTNAME>.chart" -}}
+{{- define "ccc.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*replica count定义*/}}
-{{- define "<CHARTNAME>.replica" }}
+{{- define "ccc.replica" }}
 {{- default 1 .Values.replicaCount }}
 {{- end }}
 
 {{/*Selector过滤标签*/}}
-{{- define "<CHARTNAME>.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "<CHARTNAME>.fullname" . }}
+{{- define "ccc.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "ccc.fullname" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*通用label*/}}
-{{- define "<CHARTNAME>.labels" -}}
-helm.sh/chart: {{ include "<CHARTNAME>.chart" . }}
-{{ include "<CHARTNAME>.selectorLabels" . }}
+{{- define "ccc.labels" -}}
+helm.sh/chart: {{ include "ccc.chart" . }}
+{{ include "ccc.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
-`
-)
