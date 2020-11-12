@@ -12,7 +12,8 @@ services:
     hostIPC: true
     volumes:
     - name: test
-      hostPath: /aaa/bbb
+      hostPath:
+        path: /aaa/bbb
     imagePullSecrets:
     - name: secretName
     resources:

@@ -31,8 +31,7 @@ spec:
       hostIPC: {{ (index .Values.services <INDEX>).<SERVICENAME>.hostIPC }}
       {{- end }}
       {{- if (index .Values.services <INDEX>).<SERVICENAME>.volumes }}
-      {{- range (index .Values.services <INDEX>).<SERVICENAME>.volumes }}
-      {{- end }}
+      volumes: {{- (index .Values.services <INDEX>).<SERVICENAME>.volumes | toYaml | nindent 6 }}
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}
