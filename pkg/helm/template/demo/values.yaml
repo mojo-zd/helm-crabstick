@@ -1,36 +1,39 @@
 name: chart
-replicaCount: 1
-image: nginx:lates
+replicas: 1 # the default for all services
 imagePullSecrets:
-- name: secretName
+- name: secretDemo
 services:
 - demo:
     type: deployments # kubernetes resource type
     expose: # service define
-      type: None
+      clusterIP: None
+      type: ClusterIP
       ports:
-      - port: 8090
-        targetPort: 8090
+      - port: 80
+        targetPort: 80
         protocol: TCP
-        name: tcp-8090
-      - port: 8091
-        targetPort: 8091
-        protocol: TCP
-        name: tcp-8091
-    replicaCount: 1
+        name: tcp-80
+    annotations:
+      kk: vv
+      k: v
+    replicas: 2
     imagePullPolicy: Always
-    podAnnotations: xxx
-    hostIPC: true
+    podAnnotations:
+      pkk: pvv
+    hostIPC: false
     volumes:
     - name: test
       hostPath:
-        path: /aaa/bbb
+        path: /etc/bbb
     imagePullSecrets:
-    - name: secretNameDemo
-    resources:
-      limit:
-        cpu: 1
-        memory: 200Mi
-      request:
-        cpu: 500m
-        memory: 150Mi
+    - name: default
+    containers:
+    - name: demo
+      image: nginx
+      resources:
+        limits:
+          cpu: 0.3
+          memory: 100Mi
+        requests:
+          cpu: 100m
+          memory: 80Mi

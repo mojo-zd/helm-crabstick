@@ -29,8 +29,8 @@ const (
 type ResourceFormat string
 
 const (
-	DeployFormat  = "deployment_%s.yaml"
-	ServiceFormat = "service_%s.yaml"
+	DeployFormat  = "deployment-%s.yaml"
+	ServiceFormat = "service-%s.yaml"
 )
 
 type Values struct {

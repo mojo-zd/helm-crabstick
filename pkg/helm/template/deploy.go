@@ -9,10 +9,18 @@ const deployTemplate = `apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "<CHARTNAME>.fullname" . }}-<SERVICENAME>
+  {{- if (index .Values.services <INDEX>).<SERVICENAME>.annotations }}
+  annotations:
+  {{- (index .Values.services <INDEX>).<SERVICENAME>.annotations | toYaml | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "<CHARTNAME>.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  {{- if (index .Values.services <INDEX>).<SERVICENAME>.replicas }}
+  replicas: {{ (index .Values.services <INDEX>).<SERVICENAME>.replicas }}
+  {{- else }}
+  replicas: {{ .Values.replicas }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "<CHARTNAME>.selectorLabels" . | nindent 6 }}
@@ -38,10 +46,17 @@ spec:
       {{- if (index .Values.services <INDEX>).<SERVICENAME>.volumes }}
       volumes: {{- (index .Values.services <INDEX>).<SERVICENAME>.volumes | toYaml | nindent 6 }}
       {{- end }}
+      {{- if (index .Values.services <INDEX>).<SERVICENAME>.containers }}
       containers:
-      - name: {{ .Chart.Name }}
-        image: {{ .Values.image }}
-`
+      {{- range $container := (index .Values.services <INDEX>).<SERVICENAME>.containers }}
+      - name: {{ ($container).name }}
+        image: {{ ($container).image }}
+        {{- if ($container).resources }}
+        resources:
+        {{- ($container).resources | toYaml| nindent 10 }}
+        {{- end }}
+      {{- end }}
+      {{- end }}`
 
 func (r *render) deploy(index int, service Service) string {
 	o := strings.ReplaceAll(deployTemplate, CHARTNAME, r.values.ChartName)

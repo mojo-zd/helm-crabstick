@@ -8,10 +8,17 @@ import (
 const serviceTemplate = `apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "<CHARTNAME>.fullname" . }}
+  name: {{ include "<CHARTNAME>.fullname" . }}-<SERVICENAME>
+  {{- if (index .Values.services <INDEX>).<SERVICENAME>.annotations }}
+  annotations:
+  {{- (index .Values.services <INDEX>).<SERVICENAME>.annotations | toYaml | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "<CHARTNAME>.labels" . | nindent 4 }}
 spec:
+  {{- if (index .Values.services <INDEX>).<SERVICENAME>.expose.clusterIP }}
+  clusterIP: {{ (index .Values.services <INDEX>).<SERVICENAME>.expose.clusterIP }}
+  {{- end }}
   {{- if (index .Values.services <INDEX>).<SERVICENAME>.expose.type }}
   type: {{ (index .Values.services <INDEX>).<SERVICENAME>.expose.type }}
   {{- end }}

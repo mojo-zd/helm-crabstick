@@ -2,10 +2,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "chart.fullname" . }}-demo
+  {{- if (index .Values.services 0).demo.annotations }}
+  annotations:
+  {{- (index .Values.services 0).demo.annotations | toYaml | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "chart.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  {{- if (index .Values.services 0).demo.replicas }}
+  replicas: {{ (index .Values.services 0).demo.replicas }}
+  {{- else }}
+  replicas: {{ .Values.replicas }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "chart.selectorLabels" . | nindent 6 }}
@@ -31,6 +39,14 @@ spec:
       {{- if (index .Values.services 0).demo.volumes }}
       volumes: {{- (index .Values.services 0).demo.volumes | toYaml | nindent 6 }}
       {{- end }}
+      {{- if (index .Values.services 0).demo.containers }}
       containers:
-      - name: {{ .Chart.Name }}
-        image: {{ .Values.image }}
+      {{- range $container := (index .Values.services 0).demo.containers }}
+      - name: {{ ($container).name }}
+        image: {{ ($container).image }}
+        {{- if ($container).resources }}
+        resources:
+        {{- ($container).resources | toYaml| nindent 10 }}
+        {{- end }}
+      {{- end }}
+      {{- end }}
