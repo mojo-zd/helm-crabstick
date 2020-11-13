@@ -1,23 +1,40 @@
 package template
 
 import (
+	"fmt"
 	"io/ioutil"
 	"testing"
 )
 
-const testValues = `
-name: ccc
+const testValues = `name: chart
 replicaCount: 1
+image: nginx:lates
 imagePullSecrets:
-- secretName
+- name: secretName
 services:
 - demo:
-    type: deployments
+    type: deployments # kubernetes resource type
+    expose: # service define
+      type: ClusterIP
+      ports:
+      - port: 8090
+        targetPort: 8090
+        protocol: TCP
+        name: tcp-8090
+      - port: 8091
+        targetPort: 8091
+        protocol: TCP
+        name: tcp-8091
     replicaCount: 1
     imagePullPolicy: Always
     podAnnotations: xxx
+    hostIPC: true
+    volumes:
+    - name: test
+      hostPath:
+        path: /aaa/bbb
     imagePullSecrets:
-    - name: secretName
+    - name: secretNameDemo
     resources:
       limit:
         cpu: 1
@@ -33,11 +50,13 @@ func TestRender(t *testing.T) {
 		t.Fatal(err)
 		return
 	}
-	deploy := render.Replacer()
-	write(deploy[0], "demo/templates/deploy.yaml")
-	write(render.HelperReplacer(), "demo/templates/_helpers.tpl")
+	out := render.Replacer()
+	for file, content := range out {
+		write(fmt.Sprintf("demo/templates/%s", file), content)
+	}
+	write("demo/templates/_helpers.tpl", render.HelperReplacer())
 }
 
-func write(context, name string) {
+func write(name, context string) {
 	ioutil.WriteFile(name, []byte(context), 0775)
 }

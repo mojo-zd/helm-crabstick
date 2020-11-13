@@ -2,7 +2,7 @@ package template
 
 import (
 	"errors"
-	"strconv"
+	"fmt"
 	"strings"
 
 	"github.com/ghodss/yaml"
@@ -17,11 +17,20 @@ const (
 	INDEX       = "<INDEX>"
 )
 
+// kubernetes resource type
 type ResourceType string
 
 const (
 	Deploy    = "deployments"
 	Deamonset = "deamonset"
+)
+
+// the generate format of kubernetes resource
+type ResourceFormat string
+
+const (
+	DeployFormat  = "deployment_%s.yaml"
+	ServiceFormat = "service_%s.yaml"
 )
 
 type Values struct {
@@ -30,12 +39,13 @@ type Values struct {
 }
 
 type Service struct {
-	Name string
-	Type string
+	Name     string
+	Type     string
+	IsExpose bool // is it expose service
 }
 
 type Render interface {
-	Replacer() []string
+	Replacer() map[string]string
 	HelperReplacer() string
 }
 
@@ -43,6 +53,7 @@ type render struct {
 	values Values
 }
 
+// NewRender ...
 func NewRender(values string) (Render, error) {
 	r := &render{}
 	vv, err := r.fetchBasic(values)
@@ -54,20 +65,21 @@ func NewRender(values string) (Render, error) {
 }
 
 // Replacer handler of kuernetes resources
-func (r *render) Replacer() []string {
-	result := []string{}
+func (r *render) Replacer() map[string]string {
+	result := make(map[string]string)
 	for index, service := range r.values.Services {
 		switch service.Type {
 		case Deploy:
-			o := strings.ReplaceAll(deployTemplate, CHARTNAME, r.values.ChartName)
-			o = strings.ReplaceAll(o, SERVICENAME, service.Name)
-			o = strings.ReplaceAll(o, INDEX, strconv.FormatInt(int64(index), 10))
-			result = append(result, o)
+			result[fmt.Sprintf(DeployFormat, service.Name)] = r.deploy(index, service)
+			if service.IsExpose {
+				result[fmt.Sprintf(ServiceFormat, service.Name)] = r.service(index, service)
+			}
 		}
 	}
 	return result
 }
 
+// HelperReplacer render the _helpers.tpl
 func (r *render) HelperReplacer() string {
 	return strings.ReplaceAll(helperTemplate, CHARTNAME, r.values.ChartName)
 }
@@ -114,6 +126,7 @@ func service(svr map[string]interface{}) (Service, error) {
 		}
 		ss.Name = key
 		ss.Type = typ.(string)
+		_, ss.IsExpose = vv["expose"]
 	}
 	return ss, nil
 }

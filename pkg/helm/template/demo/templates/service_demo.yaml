@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chart.fullname" . }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+spec:
+  {{- if (index .Values.services 0).demo.expose.type }}
+  type: {{ (index .Values.services 0).demo.expose.type }}
+  {{- end }}
+  {{- if (index .Values.services 0).demo.expose.ports }}
+  ports:
+  {{- (index .Values.services 0).demo.expose.ports | toYaml | nindent 2 }}
+  {{- end }}
+  selector:
+    {{- include "chart.selectorLabels" . | nindent 4 }}
