@@ -17,7 +17,7 @@ var (
 		KubeConf: "/Users/mojo/.kube/config",
 		CacheDir: "/Users/mojo/.cache/helm",
 	}
-	namespace = "default"
+	namespace = "aaa"
 )
 
 func TestReleaseList(t *testing.T) {
@@ -39,4 +39,36 @@ func TestReleaseList(t *testing.T) {
 	for _, release := range releases {
 		t.Log(release.Name, release.Chart.Metadata.Annotations)
 	}
+}
+
+func TestReleaseGet(t *testing.T) {
+	client, err := getConfAndClient()
+	if err != nil {
+		t.Fatal(err)
+	}
+	release, err := NewGetter(conf, client).Get("mn", namespace)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Log(release.Manifest)
+}
+
+func TestReleaseKind(t *testing.T) {
+	client, err := getConfAndClient()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(NewGetter(conf, client).ReleaseKind("mn", namespace))
+}
+
+func getConfAndClient() (kubernetes.Interface, error) {
+	restConf, _ := conf.ConfigFlags("aaa").ToRESTConfig()
+	client, err := kubernetes.NewForConfig(restConf)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

@@ -1,10 +1,14 @@
 package get
 
 import (
-	"github.com/mojo-zd/helm-crabstick/pkg/helm/release/action"
+	"github.com/mojo-zd/helm-crabstick/pkg/helm/storage"
+	ac "helm.sh/helm/v3/pkg/action"
+	"helm.sh/helm/v3/pkg/release"
 )
 
-// Get display release's manifest | notes | values | hooks | all
-func (g *getter) Get(ops action.GetOps, name string) (map[string]interface{}, error) {
-	return nil, nil
+// Get get release
+func (g *getter) Get(name, namespace string) (*release.Release, error) {
+	cfg := storage.ActionConfiguration(g.client, g.config, namespace)
+	get := ac.NewGet(cfg)
+	return get.Run(name)
 }

@@ -3,20 +3,14 @@ package get
 import (
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/storage"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
-	"github.com/sirupsen/logrus"
 	"helm.sh/helm/v3/pkg/action"
-	"helm.sh/helm/v3/pkg/kube"
 	"helm.sh/helm/v3/pkg/release"
-	hs "helm.sh/helm/v3/pkg/storage"
 )
 
 // List list all release by condition
 func (g *getter) List(namespace string, opts util.ListOptions) ([]*release.Release, error) {
-	store := storage.NewStorage(namespace, g.client)
-	st := store.StoreBackend(storage.SecretBackend)
-
-	acfg := g.newActionConfig(st, namespace)
-	client := action.NewList(acfg)
+	cfg := storage.ActionConfiguration(g.client, g.config, namespace)
+	client := action.NewList(cfg)
 	client.SetStateMask()
 
 	releases, err := client.Run()
@@ -24,16 +18,6 @@ func (g *getter) List(namespace string, opts util.ListOptions) ([]*release.Relea
 		return nil, err
 	}
 	return filterWithOpts(releases, opts), nil
-}
-
-func (g *getter) newActionConfig(store *hs.Storage, namespace string) *action.Configuration {
-	actionConfig := new(action.Configuration)
-	restClientGetter := g.config.ConfigFlags(namespace)
-	actionConfig.RESTClientGetter = restClientGetter
-	actionConfig.KubeClient = kube.New(restClientGetter)
-	actionConfig.Releases = store
-	actionConfig.Log = logrus.Infof
-	return actionConfig
 }
 
 func filterWithOpts(releases []*release.Release, opts util.ListOptions) []*release.Release {

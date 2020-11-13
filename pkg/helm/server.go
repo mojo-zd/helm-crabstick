@@ -26,9 +26,14 @@ type server struct {
 }
 
 // NewServer return helm server operator
-func NewServer() (Server, error) {
+func NewServer(cfgPath string) (Server, error) {
+	conf, err := config.NewConfig(cfgPath)
+	if err != nil {
+		return nil, err
+	}
+
 	srv := &server{
-		cfg: config.NewConfig(),
+		cfg: conf,
 	}
 
 	srv.init()
