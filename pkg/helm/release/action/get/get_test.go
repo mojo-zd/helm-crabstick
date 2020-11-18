@@ -1,6 +1,8 @@
 package get
 
 import (
+	"fmt"
+	"os"
 	"testing"
 
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
@@ -9,13 +11,14 @@ import (
 )
 
 var (
+	home = os.Getenv("HOME")
 	conf = config.Config{
 		Repository: &config.Repository{
 			Name: "bitnami",
 			URL:  "https://charts.bitnami.com/bitnami",
 		},
-		KubeConf: "/Users/mojo/.kube/config",
-		CacheDir: "/Users/mojo/.cache/helm",
+		KubeConf: fmt.Sprintf("%s/.kube/config", home),
+		CacheDir: fmt.Sprintf("%s/.cache/helm", home),
 	}
 	namespace = "aaa"
 )

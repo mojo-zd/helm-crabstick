@@ -6,15 +6,13 @@ import (
 	"regexp"
 	"testing"
 
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
-
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 )
 
-const manifest = `        # Source: apache/templates/svc.yaml
+const manifest = `# Source: apache/templates/svc.yaml
         apiVersion: v1
         kind: Service
         metadata:

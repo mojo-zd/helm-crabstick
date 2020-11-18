@@ -21,5 +21,5 @@ func (d *deployHandler) Get(name, namespace string) (interface{}, error) {
 }
 
 func (d *deployHandler) List(namespace string, opts v1.ListOptions) (interface{}, error) {
-	return d.client.AppsV1().Deployments(namespace).List(context.Background(), v1.ListOptions{})
+	return d.client.AppsV1().Deployments(namespace).List(context.Background(), opts)
 }

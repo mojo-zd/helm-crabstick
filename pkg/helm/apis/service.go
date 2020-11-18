@@ -21,5 +21,5 @@ func (s *serviceHandler) Get(name, namespace string) (interface{}, error) {
 }
 
 func (s *serviceHandler) List(namespace string, opts v1.ListOptions) (interface{}, error) {
-	return s.client.CoreV1().Services(namespace).List(context.Background(), v1.ListOptions{})
+	return s.client.CoreV1().Services(namespace).List(context.Background(), opts)
 }
