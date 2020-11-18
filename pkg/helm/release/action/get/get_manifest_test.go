@@ -1,14 +1,22 @@
 package get
 
 import (
+	"encoding/json"
+	"fmt"
 	"regexp"
 	"testing"
+
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager"
+	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
+
+	"k8s.io/client-go/kubernetes"
 )
 
 const manifest = `        # Source: apache/templates/svc.yaml
         apiVersion: v1
         kind: Service
-		kind: Service
         metadata:
           name: mn-apache
           labels:
@@ -130,4 +138,24 @@ func TestManifest(t *testing.T) {
 		single[k] = true
 		t.Log("kkkk:", k)
 	}
+}
+
+func TestManifestResources(t *testing.T) {
+	restConf, err := conf.ConfigFlags(namespace).ToRESTConfig()
+	if err != nil {
+		t.Fatal(err)
+		return
+	}
+	client, err := kubernetes.NewForConfig(restConf)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	getter := NewGetter(conf, client, manager.NewApiManager(client))
+	relName := "nnn"
+	out := getter.Resources(relName, "default", v1.ListOptions{
+		LabelSelector: fmt.Sprintf("%s=%s", util.SelectorLabelKey, relName),
+	})
+	o, _ := json.Marshal(out)
+	t.Log("", string(o))
 }

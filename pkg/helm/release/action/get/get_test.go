@@ -30,7 +30,7 @@ func TestReleaseList(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	getter := NewGetter(conf, client)
+	getter := NewGetter(conf, client, nil)
 	releases, err := getter.List(namespace, util.ListOptions{Annotation: map[string]string{"author": "mojo"}})
 	if err != nil {
 		t.Fatal(err)
@@ -46,7 +46,7 @@ func TestReleaseGet(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	release, err := NewGetter(conf, client).Get("mn", namespace)
+	release, err := NewGetter(conf, client, nil).Get("mn", namespace)
 	if err != nil {
 		t.Error(err)
 		return
@@ -60,7 +60,7 @@ func TestReleaseKind(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(NewGetter(conf, client).ReleaseKind("mn", namespace))
+	t.Log(NewGetter(conf, client, nil).Kind("mn", namespace))
 }
 
 func getConfAndClient() (kubernetes.Interface, error) {

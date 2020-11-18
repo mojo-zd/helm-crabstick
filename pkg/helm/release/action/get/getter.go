@@ -2,8 +2,10 @@ package get
 
 import (
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
+	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
 	"helm.sh/helm/v3/pkg/release"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -12,15 +14,21 @@ type Getter interface {
 	List(namespace string, opts util.ListOptions) ([]*release.Release, error)
 	Get(name, namespace string) (*release.Release, error)
 	Status(name, namespace string) (*release.Release, error)
-	ReleaseKind(name, namespace string) []string
+	Kind(name, namespace string) []string
+	Resources(name, namespace string, opts v1.ListOptions) map[util.KubeKind]interface{}
 }
 
 type getter struct {
-	client kubernetes.Interface
-	config config.Config
+	client  kubernetes.Interface
+	config  config.Config
+	manager *manager.ApiManager
 }
 
 // NewGetter ...
-func NewGetter(config config.Config, client kubernetes.Interface) Getter {
-	return &getter{config: config, client: client}
+func NewGetter(config config.Config, client kubernetes.Interface, mgr *manager.ApiManager) Getter {
+	return &getter{
+		config:  config,
+		client:  client,
+		manager: mgr,
+	}
 }

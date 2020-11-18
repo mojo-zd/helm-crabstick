@@ -5,10 +5,10 @@ import (
 
 	"github.com/mojo-zd/helm-crabstick/pkg/util/path"
 
+	"github.com/mojo-zd/helm-crabstick/pkg/helm/apis"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/release/action/do"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/release/action/get"
-	"github.com/mojo-zd/helm-crabstick/pkg/helm/resources"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
@@ -20,7 +20,7 @@ type server struct {
 	cfg        *config.Config
 	kubeClient kubernetes.Interface
 	httpClient *http.Client
-	resource   resources.Resource
+	resource   apis.Resource
 	doer       do.Doer
 	getter     get.Getter
 }
@@ -52,6 +52,6 @@ func (srv *server) init() error {
 		return err
 	}
 
-	srv.resource = resources.NewResource(srv.kubeClient)
+	srv.resource = apis.NewResource(srv.kubeClient)
 	return err
 }
