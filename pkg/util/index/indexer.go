@@ -7,5 +7,5 @@ import (
 )
 
 func GetIndexFile(name string) string {
-	return fmt.Sprintf("%s/%s-index.yaml", path.GetRepositoryCacheDir(), name)
+	return fmt.Sprintf("%s/%s-index.yaml", path.GetRepoCacheDir(), name)
 }

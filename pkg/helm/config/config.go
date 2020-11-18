@@ -17,9 +17,8 @@ func NewConfig(path string) (*Config, error) {
 }
 
 // ConfigFlags ...
-func (c *Config) ConfigFlags(namespace string) *genericclioptions.ConfigFlags {
+func (c *Config) ConfigFlags() *genericclioptions.ConfigFlags {
 	return &genericclioptions.ConfigFlags{
-		Namespace:   &namespace,
 		KubeConfig:  &c.KubeConf,
 		BearerToken: &c.KubeToken,
 		Context:     &c.KubeContext,

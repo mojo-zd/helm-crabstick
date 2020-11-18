@@ -20,6 +20,6 @@ func NewIndexCache(repo string) IndexCache {
 }
 
 func (cache *indexCache) LoadIndex() (*repo.IndexFile, error) {
-	indexFile := fmt.Sprintf("%s/%s-index.yaml", path.GetRepositoryCacheDir(), cache.repoName)
+	indexFile := fmt.Sprintf("%s/%s-index.yaml", path.GetRepoCacheDir(), cache.repoName)
 	return repo.LoadIndexFile(indexFile)
 }

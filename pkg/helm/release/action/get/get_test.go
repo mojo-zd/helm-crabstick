@@ -20,11 +20,11 @@ var (
 		KubeConf: fmt.Sprintf("%s/.kube/config", home),
 		CacheDir: fmt.Sprintf("%s/.cache/helm", home),
 	}
-	namespace = "aaa"
+	namespace = "demo"
 )
 
 func TestReleaseList(t *testing.T) {
-	restConf, err := conf.ConfigFlags(namespace).ToRESTConfig()
+	restConf, err := conf.ConfigFlags().ToRESTConfig()
 	if err != nil {
 		t.Fatal(err)
 		return
@@ -63,11 +63,20 @@ func TestReleaseKind(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(NewGetter(conf, client, nil).Kind("mn", namespace))
+	getter := NewGetter(conf, client, nil)
+	rels, err := getter.List(namespace, util.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	for _, rel := range rels {
+		t.Logf("release [%s], kind: %s", rel.Name, getter.Kind(rel.Name, namespace))
+	}
 }
 
 func getConfAndClient() (kubernetes.Interface, error) {
-	restConf, _ := conf.ConfigFlags("aaa").ToRESTConfig()
+	restConf, _ := conf.ConfigFlags().ToRESTConfig()
 	client, err := kubernetes.NewForConfig(restConf)
 	if err != nil {
 		return nil, err

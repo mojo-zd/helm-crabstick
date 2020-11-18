@@ -23,12 +23,12 @@ func GetCacheHome() string {
 }
 
 // GetCacheRepositoryDir repository's cache dir
-func GetRepositoryCacheDir() string {
+func GetRepoCacheDir() string {
 	return path.Join(GetCacheHome(), "repository")
 }
 
-func MkRepositoryCacheDir() error {
-	cacheDir := GetRepositoryCacheDir()
+func MkRepoCacheDirIfNotExist() error {
+	cacheDir := GetRepoCacheDir()
 	if _, err := os.Stat(cacheDir); err != nil && os.IsNotExist(err) {
 		return os.MkdirAll(cacheDir, 0755)
 	}

@@ -3,9 +3,9 @@ package path
 import "testing"
 
 func TestPath(t *testing.T) {
-	repoCachePath := GetRepositoryCacheDir()
+	repoCachePath := GetRepoCacheDir()
 	cacheHome := GetCacheHome()
-	if err := MkRepositoryCacheDir(); err != nil {
+	if err := MkRepoCacheDirIfNotExist(); err != nil {
 		t.Fatal(err)
 	}
 	t.Log(repoCachePath, cacheHome)

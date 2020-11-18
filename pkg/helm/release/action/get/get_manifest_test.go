@@ -134,12 +134,12 @@ func TestManifest(t *testing.T) {
 			continue
 		}
 		single[k] = true
-		t.Log("kkkk:", k)
+		t.Log("kind:", k)
 	}
 }
 
 func TestManifestResources(t *testing.T) {
-	restConf, err := conf.ConfigFlags(namespace).ToRESTConfig()
+	restConf, err := conf.ConfigFlags().ToRESTConfig()
 	if err != nil {
 		t.Fatal(err)
 		return
@@ -150,10 +150,16 @@ func TestManifestResources(t *testing.T) {
 	}
 
 	getter := NewGetter(conf, client, manager.NewApiManager(client))
-	relName := "nnn"
-	out := getter.Resources(relName, "default", v1.ListOptions{
-		LabelSelector: fmt.Sprintf("%s=%s", util.SelectorLabelKey, relName),
-	})
-	o, _ := json.Marshal(out)
-	t.Log("", string(o))
+	rels, err := getter.List(namespace, util.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	for _, rel := range rels {
+		out := getter.Resources(rel.Name, namespace, v1.ListOptions{
+			LabelSelector: fmt.Sprintf("%s=%s", util.SelectorLabelKey, rel.Name),
+		})
+		o, _ := json.Marshal(out)
+		t.Log("kubernetes resources:", string(o))
+	}
 }

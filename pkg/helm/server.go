@@ -3,9 +3,10 @@ package helm
 import (
 	"net/http"
 
+	"github.com/mojo-zd/helm-crabstick/pkg/helm/repository"
+
 	"github.com/mojo-zd/helm-crabstick/pkg/util/path"
 
-	"github.com/mojo-zd/helm-crabstick/pkg/helm/apis"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/release/action/do"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/release/action/get"
@@ -20,9 +21,9 @@ type server struct {
 	cfg        *config.Config
 	kubeClient kubernetes.Interface
 	httpClient *http.Client
-	resource   apis.Resource
 	doer       do.Doer
 	getter     get.Getter
+	repo       repository.RepoHandler
 }
 
 // NewServer return helm server operator
@@ -41,7 +42,7 @@ func NewServer(cfgPath string) (Server, error) {
 }
 
 func (srv *server) init() error {
-	path.MkRepositoryCacheDir() // prepare cache directory
+	path.MkRepoCacheDirIfNotExist() // prepare cache directory
 	srv.httpClient = &http.Client{}
 
 	config, err := clientcmd.BuildConfigFromFlags("", srv.cfg.KubeConf)
@@ -51,7 +52,5 @@ func (srv *server) init() error {
 	if srv.kubeClient, err = kubernetes.NewForConfig(config); err != nil {
 		return err
 	}
-
-	srv.resource = apis.NewResource(srv.kubeClient)
 	return err
 }

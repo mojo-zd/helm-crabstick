@@ -6,7 +6,6 @@ import (
 
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
 
-	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
 	"helm.sh/helm/v3/pkg/release"
 )
 
@@ -16,7 +15,6 @@ const timeout = 1 * time.Minute
 type Doer interface {
 	Install(name, chart string) (*release.Release, error)
 	Uninstall(name string) error
-	SynRepo(repo config.Repository) error
 }
 
 type doer struct {
@@ -26,6 +24,6 @@ type doer struct {
 // NewDoer ...
 func NewDoer() Doer {
 	return &doer{
-		client: util.NewHttpClient(time.Minute),
+		client: util.NewHttpClient(timeout),
 	}
 }
