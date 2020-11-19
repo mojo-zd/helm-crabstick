@@ -2,3 +2,10 @@
 - chart列表
 - 指定chart version列表, 可根据自定义信息进行过滤
 - chart安装, 可添加自定义信息到annotation
+- 查看chart详细 e.g. readme, values, chart
+- release 列表
+- release 获取manifest
+- release 状态信息
+- release 升级
+- release 相关运行态资源列表
+- release 历史

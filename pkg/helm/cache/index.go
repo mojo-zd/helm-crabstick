@@ -2,6 +2,7 @@ package cache
 
 import (
 	"fmt"
+	pt "path"
 
 	"github.com/mojo-zd/helm-crabstick/pkg/util/path"
 	"helm.sh/helm/v3/pkg/repo"
@@ -20,6 +21,6 @@ func NewIndexCache(repo string) IndexCache {
 }
 
 func (cache *indexCache) LoadIndex() (*repo.IndexFile, error) {
-	indexFile := fmt.Sprintf("%s/%s-index.yaml", path.GetRepoCacheDir(), cache.repoName)
+	indexFile := pt.Join(path.GetRepoCacheDir(), fmt.Sprintf("%s-index.yaml", cache.repoName))
 	return repo.LoadIndexFile(indexFile)
 }

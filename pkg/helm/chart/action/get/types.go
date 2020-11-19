@@ -2,6 +2,8 @@ package get
 
 import (
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/cache"
+	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
+	"helm.sh/helm/v3/pkg/action"
 )
 
 type Getter interface {
@@ -10,6 +12,9 @@ type Getter interface {
 	// Charts find chart information with chart name from repository
 	// it will find the spec chart if version assigned
 	ChartVersion(chartName string) ChartInfo
+
+	// Show show chart detail information
+	Show(name, version string, output action.ShowOutputFormat) string
 }
 
 type ChartVersions []*ChartVersion
@@ -36,12 +41,14 @@ type Version struct {
 type getter struct {
 	cache    cache.IndexCache
 	repoName string
+	cfg      config.Config
 }
 
-func NewGetter(repo string) Getter {
+func NewGetter(conf config.Config, repo string) Getter {
 	return &getter{
 		cache:    cache.NewIndexCache(repo),
 		repoName: repo,
+		cfg:      conf,
 	}
 }
 

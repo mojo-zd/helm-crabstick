@@ -20,7 +20,8 @@ var (
 		KubeConf: fmt.Sprintf("%s/.kube/config", home),
 		CacheDir: fmt.Sprintf("%s/.cache/helm", home),
 	}
-	namespace = "demo"
+	namespace   = "default"
+	releaseName = "bn"
 )
 
 func TestReleaseList(t *testing.T) {
@@ -49,7 +50,7 @@ func TestReleaseGet(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	release, err := NewGetter(conf, client, nil).Get("mn", namespace)
+	release, err := NewGetter(conf, client, nil).Get(releaseName, namespace)
 	if err != nil {
 		t.Error(err)
 		return
@@ -72,6 +73,23 @@ func TestReleaseKind(t *testing.T) {
 
 	for _, rel := range rels {
 		t.Logf("release [%s], kind: %s", rel.Name, getter.Kind(rel.Name, namespace))
+	}
+}
+
+func TestHistory(t *testing.T) {
+	client, err := getConfAndClient()
+	if err != nil {
+		t.Fatal(err)
+	}
+	getter := NewGetter(conf, client, nil)
+	out, err := getter.History(releaseName, namespace)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	for _, re := range out {
+		t.Log(re.Chart, re.Description, re.AppVersion, re.Status, re.Revision, re.Updated)
 	}
 }
 

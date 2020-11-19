@@ -43,3 +43,15 @@
 2. 获取列表是否需要指定namespace
 
 > 如需提供同步功能可以删除缓存目录中的相关.tgz文件
+
+cat > custom-repos.yaml <<EOF
+sync:
+  repos:
+    - name: bitnami
+      url: https://charts.bitnami.com/bitnami
+      schedule: "0 * * * *"
+      successfulJobsHistoryLimit: 1
+EOF
+
+
+`https://github.com/jeremykross/konstellate`
