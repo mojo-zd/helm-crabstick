@@ -32,8 +32,9 @@ func (d *doer) Install(chartName, name, namespace string, opts DoerOptions) (*re
 		return nil, err
 	}
 	setting := util.NewSetting(d.config)
-	cfg := d.buildActionConfiguration(namespace, setting)
+	cfg := d.buildActionConfiguration(namespace)
 	install := action.NewInstall(cfg)
+	install.Namespace = namespace
 	install.ChartPathOptions = chartOpts
 	chartObj, vals, err := d.installPre(install, valueOpts, setting, os.Stdout, name, chartName)
 	if opts.Annotation != nil {
@@ -116,12 +117,10 @@ func (d *doer) installPre(
 			}
 		}
 	}
-	client.Namespace = settings.Namespace()
 	return chartRequested, val, nil
 }
 
 // checkIfInstallable validates if a chart can be installed
-//
 // Application chart type is only installable
 func checkIfInstallable(ch *chart.Chart) error {
 	switch ch.Metadata.Type {
@@ -131,13 +130,13 @@ func checkIfInstallable(ch *chart.Chart) error {
 	return errors.Errorf("%s charts are not installable", ch.Metadata.Type)
 }
 
-func (d *doer) buildActionConfiguration(namespace string, setting *cli.EnvSettings) *action.Configuration {
+func (d *doer) buildActionConfiguration(namespace string) *action.Configuration {
 	secrets := driver.NewSecrets(d.client.CoreV1().Secrets(namespace))
 	secrets.Log = logrus.Infof
 	store := storage.Init(secrets)
 
 	actionConfig := new(action.Configuration)
-	config, _ := setting.RESTClientGetter().ToRESTConfig()
+	config, _ := d.config.ConfigFlags().ToRESTConfig()
 	restClientGetter := NewConfigFlagsFromCluster(namespace, config)
 	actionConfig.RESTClientGetter = restClientGetter
 	actionConfig.KubeClient = kube.New(restClientGetter)

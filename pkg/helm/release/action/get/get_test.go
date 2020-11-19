@@ -20,7 +20,7 @@ var (
 		KubeConf: fmt.Sprintf("%s/.kube/config", home),
 		CacheDir: fmt.Sprintf("%s/.cache/helm", home),
 	}
-	namespace   = "default"
+	namespace   = "demo"
 	releaseName = "bn"
 )
 

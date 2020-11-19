@@ -1,29 +1,29 @@
 package do
 
 import (
-	"net/http"
-	"time"
-
-	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
-
+	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
 	"helm.sh/helm/v3/pkg/release"
+	"k8s.io/client-go/kubernetes"
 )
-
-const timeout = 1 * time.Minute
 
 // Doer include install、uninstall operator
 type Doer interface {
-	Install(name, chart string) (*release.Release, error)
-	Uninstall(name string) error
+	// Delete uninstall release
+	Delete(name, namespace string) (*release.UninstallReleaseResponse, error)
+
+	// Upgrade upgrade release
+	Upgrade(release, chart, version, namespace string) (*release.Release, error)
 }
 
 type doer struct {
-	client *http.Client
+	client kubernetes.Interface
+	cfg    config.Config
 }
 
 // NewDoer ...
-func NewDoer() Doer {
+func NewDoer(client kubernetes.Interface, conf config.Config) Doer {
 	return &doer{
-		client: util.NewHttpClient(timeout),
+		client: client,
+		cfg:    conf,
 	}
 }

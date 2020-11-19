@@ -16,22 +16,29 @@ var (
 			Name: "bitnami",
 			URL:  "https://charts.bitnami.com/bitnami",
 		},
-		KubeConf: fmt.Sprintf("%s/%s", home, ".kube/config"),
-		CacheDir: fmt.Sprintf("%s/%s", home, ".cache/helm"),
+		KubeConf: fmt.Sprintf("%s/.kube/config", home),
+		CacheDir: fmt.Sprintf("%s/.cache/helm", home),
 	}
-	chartName   = "apache"
 	namespace   = "demo"
 	releaseName = "bn"
+	chart       = "apache"
+	version     = "8.0.0"
 )
 
-func TestInstall(t *testing.T) {
-	doer := NewDoer(conf, getClient(t))
-	rls, err := doer.Install(chartName, releaseName, namespace, DoerOptions{Annotation: map[string]string{"author": "mojo"}})
+func TestUpgrade(t *testing.T) {
+	_, err := NewDoer(getClient(t), conf).Upgrade(releaseName, chart, version, namespace)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
+	}
+}
+
+func TestDelete(t *testing.T) {
+	doer := NewDoer(getClient(t), conf)
+	if _, err := doer.Delete(releaseName, namespace); err != nil {
+		t.Error("delete release failed", err)
 		return
 	}
-	t.Log(rls.Name, rls.Chart.Metadata.Annotations["author"])
+	t.Log("delete success")
 }
 
 func getClient(t *testing.T) kubernetes.Interface {

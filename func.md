@@ -7,5 +7,6 @@
 - release 获取manifest
 - release 状态信息
 - release 升级
-- release 相关运行态资源列表
 - release 历史
+- release 删除
+- release 相关运行态资源列表
