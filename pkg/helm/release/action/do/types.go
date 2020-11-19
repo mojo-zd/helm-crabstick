@@ -12,7 +12,7 @@ type Doer interface {
 	Delete(name, namespace string) (*release.UninstallReleaseResponse, error)
 
 	// Upgrade upgrade release
-	Upgrade(release, chart, version, namespace string) (*release.Release, error)
+	Upgrade(release, chart, version, values, namespace string) (*release.Release, error)
 }
 
 type doer struct {

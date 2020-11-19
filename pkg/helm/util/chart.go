@@ -3,6 +3,10 @@ package util
 import (
 	"errors"
 
+	"github.com/sirupsen/logrus"
+
+	"sigs.k8s.io/yaml"
+
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
 	"helm.sh/helm/v3/pkg/action"
 )
@@ -22,4 +26,14 @@ func LoadChartOptions(config config.Config) (action.ChartPathOptions, error) {
 		Password:              config.Repository.Password,
 		RepoURL:               config.Repository.URL,
 	}, nil
+}
+
+func GetValues(value string) (map[string]interface{}, error) {
+	out := make(map[string]interface{})
+	err := yaml.Unmarshal([]byte(value), &out)
+	if err != nil {
+		logrus.Errorf("unmarshal values failed, err:%s", err.Error())
+		return out, err
+	}
+	return out, err
 }

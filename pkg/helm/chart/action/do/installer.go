@@ -11,7 +11,6 @@ import (
 	"helm.sh/helm/v3/pkg/chart"
 	"helm.sh/helm/v3/pkg/chart/loader"
 	"helm.sh/helm/v3/pkg/cli"
-	"helm.sh/helm/v3/pkg/cli/values"
 	"helm.sh/helm/v3/pkg/downloader"
 	"helm.sh/helm/v3/pkg/getter"
 	"helm.sh/helm/v3/pkg/kube"
@@ -23,9 +22,8 @@ import (
 )
 
 // Install install chart
-func (d *doer) Install(chartName, name, namespace string, opts DoerOptions) (*release.Release, error) {
+func (d *doer) Install(chartName, name, namespace, valueString string, opts DoerOptions) (*release.Release, error) {
 	chartOpts, err := util.LoadChartOptions(d.config)
-	valueOpts := &values.Options{}
 	if err != nil {
 		logrus.Errorf("load chart options failed, err:%s", err)
 
@@ -36,7 +34,7 @@ func (d *doer) Install(chartName, name, namespace string, opts DoerOptions) (*re
 	install := action.NewInstall(cfg)
 	install.Namespace = namespace
 	install.ChartPathOptions = chartOpts
-	chartObj, vals, err := d.installPre(install, valueOpts, setting, os.Stdout, name, chartName)
+	chartObj, err := d.installPre(install, setting, os.Stdout, name, chartName)
 	if opts.Annotation != nil {
 		for key, value := range opts.Annotation {
 			chartObj.Metadata.Annotations[key] = value
@@ -46,43 +44,41 @@ func (d *doer) Install(chartName, name, namespace string, opts DoerOptions) (*re
 		return nil, err
 	}
 
-	return install.Run(chartObj, vals)
+	val, err := util.GetValues(valueString)
+	if err != nil {
+		return nil, err
+	}
+	return install.Run(chartObj, val)
 }
 
 func (d *doer) installPre(
 	client *action.Install,
-	valueOpts *values.Options,
 	settings *cli.EnvSettings,
 	out io.Writer,
-	args ...string) (*chart.Chart, map[string]interface{}, error) {
+	args ...string) (*chart.Chart, error) {
 	name, chartName, err := client.NameAndChart(args)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	cp, err := client.ChartPathOptions.LocateChart(chartName, settings)
 	if err != nil {
 		logrus.Errorf("locate chart failed, err:%s", err.Error())
-		return nil, nil, err
+		return nil, err
 	}
 	logrus.Debugf("chart location [%s]", cp)
 	client.ReleaseName = name
 	providers := getter.All(settings)
-	val, err := valueOpts.MergeValues(providers)
-	if err != nil {
-		logrus.Errorf("can't merge values, err:%s", err.Error())
-		return nil, nil, err
-	}
 
 	// Check chart dependencies to make sure all are present in /charts
 	chartRequested, err := loader.Load(cp)
 	if err != nil {
 		logrus.Errorf("load chart failed, err:%s", err.Error())
-		return nil, nil, err
+		return nil, err
 	}
 
 	if err := checkIfInstallable(chartRequested); err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	if chartRequested.Metadata.Deprecated {
@@ -106,18 +102,18 @@ func (d *doer) installPre(
 					Debug:            settings.Debug,
 				}
 				if err := man.Update(); err != nil {
-					return nil, nil, err
+					return nil, err
 				}
 				// Reload the chart with the updated Chart.lock file.
 				if chartRequested, err = loader.Load(cp); err != nil {
-					return nil, nil, errors.Wrap(err, "failed reloading chart after repo update")
+					return nil, errors.Wrap(err, "failed reloading chart after repo update")
 				}
 			} else {
-				return nil, nil, err
+				return nil, err
 			}
 		}
 	}
-	return chartRequested, val, nil
+	return chartRequested, nil
 }
 
 // checkIfInstallable validates if a chart can be installed

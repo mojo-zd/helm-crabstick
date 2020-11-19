@@ -11,7 +11,7 @@ type DoerOptions struct {
 }
 
 type Doer interface {
-	Install(chart, name, namespace string, opts DoerOptions) (*release.Release, error)
+	Install(chart, name, namespace, values string, opts DoerOptions) (*release.Release, error)
 }
 
 type doer struct {

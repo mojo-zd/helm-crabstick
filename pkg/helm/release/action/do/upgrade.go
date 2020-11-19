@@ -7,21 +7,18 @@ import (
 	"github.com/sirupsen/logrus"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chart/loader"
-	"helm.sh/helm/v3/pkg/cli/values"
-	"helm.sh/helm/v3/pkg/getter"
 	"helm.sh/helm/v3/pkg/release"
 )
 
-func (d *doer) Upgrade(release, chart, version, namespace string) (*release.Release, error) {
+func (d *doer) Upgrade(release, chart, version, values, namespace string) (*release.Release, error) {
 	configuration := storage.ActionConfiguration(d.client, d.cfg, namespace)
 	client := action.NewUpgrade(configuration)
 	client.Namespace = namespace
-	return d.runUpgrade(release, chart, version, client)
+	return d.runUpgrade(release, chart, version, values, client)
 }
 
-func (d *doer) runUpgrade(release, chart, version string, client *action.Upgrade) (*release.Release, error) {
+func (d *doer) runUpgrade(release, chart, version, values string, client *action.Upgrade) (*release.Release, error) {
 	setting := util.NewSetting(d.cfg)
-	valueOpts := &values.Options{}
 	if client.Version == "" && client.Devel {
 		logrus.Debug("setting version to >0.0.0-0")
 		client.Version = ">0.0.0-0"
@@ -34,11 +31,6 @@ func (d *doer) runUpgrade(release, chart, version string, client *action.Upgrade
 	chartOption.Version = version
 	client.ChartPathOptions = chartOption
 	cp, err := client.ChartPathOptions.LocateChart(chart, setting)
-	if err != nil {
-		return nil, err
-	}
-
-	vals, err := valueOpts.MergeValues(getter.All(setting))
 	if err != nil {
 		return nil, err
 	}
@@ -57,6 +49,10 @@ func (d *doer) runUpgrade(release, chart, version string, client *action.Upgrade
 		logrus.Warn("This chart is deprecated")
 	}
 
+	vals, err := util.GetValues(values)
+	if err != nil {
+		return nil, err
+	}
 	rel, err := client.Run(release, ch, vals)
 	if err != nil {
 		return nil, errors.Wrap(err, "UPGRADE FAILED")
