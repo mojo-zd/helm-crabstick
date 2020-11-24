@@ -8,4 +8,12 @@ namespaces:
 k8s:
   kubeconfig: /Users/mojo/.kube/configdev # 在本地DEBUG用,配置本地kubeconfig地址，不配置便加载inclusterconfig
   prometheus:
+repository: # 正式环境使用harbor作为应用仓库
+  name: bitnami
+  url: https://charts.bitnami.com/bitnami
+  username:
+  password:
+  maxHistory: 20 # the max history of helm release to list
+  storageBackend: # default to use secrets to storage release
+  type: ordinary  # ordinary(e.g. bitnami)、harbor
 runMode: dev

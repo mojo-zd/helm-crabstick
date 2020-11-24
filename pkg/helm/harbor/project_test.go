@@ -8,7 +8,7 @@ import (
 
 var (
 	cfg = config.Config{
-		Harbor: &config.Harbor{
+		Repository: &config.Repository{
 			Username: "admin",
 			Password: "Harbor12345",
 			URL:      "http://118.31.50.65:10080",
@@ -17,7 +17,7 @@ var (
 )
 
 func TestProjectGet(t *testing.T) {
-	handler := NewProjectHandler(*cfg.Harbor)
+	handler := NewProjectHandler(*cfg.Repository)
 	projects, _ := handler.Get("library")
 	for _, project := range projects {
 		t.Log(project.Name, project.ProjectId, project.Metadata.Public)
@@ -25,7 +25,7 @@ func TestProjectGet(t *testing.T) {
 }
 
 func TestProjectCreate(t *testing.T) {
-	handler := NewProjectHandler(*cfg.Harbor)
+	handler := NewProjectHandler(*cfg.Repository)
 	if err := handler.Create(&Project{Name: "locast11", Metadata: &Metadata{Public: "false"}}); err != nil {
 		t.Fatal(err)
 		return

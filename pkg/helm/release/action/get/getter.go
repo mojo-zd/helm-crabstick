@@ -2,7 +2,7 @@ package get
 
 import (
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
-	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager"
+	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager/kube"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
 	"helm.sh/helm/v3/pkg/release"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -22,11 +22,11 @@ type Getter interface {
 type getter struct {
 	client  kubernetes.Interface
 	config  config.Config
-	manager *manager.ApiManager
+	manager *kube.ApiManager
 }
 
 // NewGetter ...
-func NewGetter(config config.Config, client kubernetes.Interface, mgr *manager.ApiManager) Getter {
+func NewGetter(config config.Config, client kubernetes.Interface, mgr *kube.ApiManager) Getter {
 	return &getter{
 		config:  config,
 		client:  client,

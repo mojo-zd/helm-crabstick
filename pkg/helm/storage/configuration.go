@@ -21,7 +21,7 @@ func ActionConfiguration(client kubernetes.Interface, c config.Config, namespace
 	}
 	config.RESTClientGetter = restClientGetter
 	config.KubeClient = kube.New(restClientGetter)
-	config.Releases = NewStorage(namespace, client).StoreBackend(StoreBackend(c.StorageBackend))
+	config.Releases = NewStorage(namespace, client).StoreBackend(StoreBackend(c.Repository.StorageBackend))
 
 	return config
 }

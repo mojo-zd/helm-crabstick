@@ -26,6 +26,14 @@ type Config struct {
 		Address string `mapstructure:"host"`
 	} `mapstructure:"registry"` // registry center
 
+	Repository struct {
+		Name           string `mapstructure:"name"`
+		URL            string `mapstructure:"url"`
+		Username       string `mapstructure:"username"`
+		Password       string `mapstructure:"password"`
+		MaxHistory     string `mapstructure:"maxHistory"`
+		StorageBackend string `mapstructure:"storageBackend"`
+	}
 	RunMode string `mapstructure:"runMode"` // dev or prod
 }
 

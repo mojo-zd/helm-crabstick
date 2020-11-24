@@ -1,4 +1,4 @@
-package manager
+package kube
 
 import (
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/apis"

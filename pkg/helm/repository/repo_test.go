@@ -12,11 +12,11 @@ var (
 	home = os.Getenv("HOME")
 	conf = config.Config{
 		Repository: &config.Repository{
-			Name: "bitnami",
-			URL:  "https://charts.bitnami.com/bitnami",
+			Name:  "bitnami",
+			URL:   "https://charts.bitnami.com/bitnami",
+			Cache: fmt.Sprintf("%s/.cache/helm", home),
 		},
 		KubeConf: fmt.Sprintf("%s/.kube/config", home),
-		CacheDir: fmt.Sprintf("%s/.cache/helm", home),
 	}
 )
 

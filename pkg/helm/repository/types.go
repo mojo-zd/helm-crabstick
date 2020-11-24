@@ -13,7 +13,7 @@ var (
 	repoSettingErr = errors.New("not found helm repository's setting, please set")
 )
 
-const timeout = time.Minute
+const timeout = 2 * time.Minute
 
 type RepoHandler interface {
 	CacheIndex() error

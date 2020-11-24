@@ -4,8 +4,7 @@ import (
 	"net/http"
 
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/repository"
-
-	"github.com/mojo-zd/helm-crabstick/pkg/util/path"
+	"github.com/mojo-zd/helm-crabstick/pkg/util/file"
 
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/release/action/do"
@@ -42,7 +41,7 @@ func NewServer(cfgPath string) (Server, error) {
 }
 
 func (srv *server) init() error {
-	path.MkRepoCacheDirIfNotExist() // prepare cache directory
+	file.CreateHelmDirIfNotExist() // prepare cache directory
 	srv.httpClient = &http.Client{}
 
 	config, err := clientcmd.BuildConfigFromFlags("", srv.cfg.KubeConf)

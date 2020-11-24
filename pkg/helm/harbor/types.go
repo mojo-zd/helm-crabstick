@@ -33,9 +33,9 @@ type Value struct {
 	Query map[string]string
 }
 
-func doRequest(method string, value Value, body io.Reader, harbor config.Harbor) ([]byte, error) {
+func doRequest(method string, value Value, body io.Reader, repository config.Repository) ([]byte, error) {
 	client := &http.Client{}
-	request, err := newRequest(method, value, body, harbor)
+	request, err := newRequest(method, value, body, repository)
 	if err != nil {
 		return nil, err
 	}
@@ -52,14 +52,13 @@ func doRequest(method string, value Value, body io.Reader, harbor config.Harbor)
 		logrus.Errorf("read http body failed, err:%s", err.Error())
 		return nil, err
 	}
-	logrus.Info("out---->", string(out))
 	return out, nil
 }
 
-func newRequest(method string, value Value, body io.Reader, harbor config.Harbor) (*http.Request, error) {
-	u, err := url.Parse(harbor.URL)
+func newRequest(method string, value Value, body io.Reader, repository config.Repository) (*http.Request, error) {
+	u, err := url.Parse(repository.URL)
 	if err != nil {
-		logrus.Errorf("parse url[%s] failed,err:%s", harbor.URL, err.Error())
+		logrus.Errorf("parse url[%s] failed,err:%s", repository.URL, err.Error())
 		return nil, err
 	}
 	u.Path = path.Join(u.Path, value.Path)
@@ -69,7 +68,7 @@ func newRequest(method string, value Value, body io.Reader, harbor config.Harbor
 		logrus.Errorf("new request[%s] failed, err:%s", u.String(), err.Error())
 		return nil, err
 	}
-	request.SetBasicAuth(harbor.Username, harbor.Password)
+	request.SetBasicAuth(repository.Username, repository.Password)
 	request.Header.Set("Content-Type", "application/json")
 	return request, nil
 }

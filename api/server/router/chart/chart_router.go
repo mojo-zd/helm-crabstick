@@ -2,7 +2,7 @@ package chart
 
 import (
 	"github.com/kataras/iris/v12/context"
-	"github.com/sirupsen/logrus"
+	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager"
 )
 
 func (c *chartRouter) requestID(ctx context.Context) string {
@@ -10,7 +10,6 @@ func (c *chartRouter) requestID(ctx context.Context) string {
 }
 
 func (c *chartRouter) getCharts(ctx context.Context) error {
-	ctx.JSON(map[string]interface{}{"name": "chartDemo", "version": "v0.12.0"})
-	logrus.Info("call get charts api")
+	ctx.JSON(manager.NewAppManager(c.cfg).ChartGetter.List())
 	return nil
 }

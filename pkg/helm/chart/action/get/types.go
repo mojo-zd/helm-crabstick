@@ -44,10 +44,10 @@ type getter struct {
 	cfg      config.Config
 }
 
-func NewGetter(conf config.Config, repo string) Getter {
+func NewGetter(conf config.Config) Getter {
 	return &getter{
-		cache:    cache.NewIndexCache(repo),
-		repoName: repo,
+		cache:    cache.NewIndexCache(conf.Repository.Name),
+		repoName: conf.Repository.Name,
 		cfg:      conf,
 	}
 }

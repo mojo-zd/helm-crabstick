@@ -33,8 +33,8 @@ func (c *Config) validate() error {
 		return errors.New("not setting helm repository")
 	}
 	// set default storage backend
-	if len(c.StorageBackend) == 0 {
-		c.StorageBackend = "secrets"
+	if len(c.Repository.StorageBackend) == 0 {
+		c.Repository.StorageBackend = "secrets"
 	}
 	return nil
 }

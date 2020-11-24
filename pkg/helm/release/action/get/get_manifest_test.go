@@ -6,7 +6,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager"
+	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager/kube"
+
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -149,7 +150,7 @@ func TestManifestResources(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	getter := NewGetter(conf, client, manager.NewApiManager(client))
+	getter := NewGetter(conf, client, kube.NewApiManager(client))
 	rels, err := getter.List(namespace, util.ListOptions{})
 	if err != nil {
 		t.Error(err)

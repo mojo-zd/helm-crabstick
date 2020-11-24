@@ -1,17 +1,37 @@
-package path
+package file
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 const (
-	CacheHomeEnvVar = "HELM_CACHE_HOME"
-	lp              = "helm"
+	CacheHomeEnvVar  = "HELM_CACHE_HOME"
+	ConfigHomeEnvVar = "HELM_CONFIG_HOME"
+	lp               = "helm"
 )
+
+// RepoIndexExist check repo index file exist
+func RepoIndexExist(repoName string) bool {
+	_, err := os.Stat(GetIndexFile(repoName))
+	return !os.IsNotExist(err)
+}
+
+// GetIndexFile get helm index file
+func GetIndexFile(name string) string {
+	return path.Join(GetCacheDir(), fmt.Sprintf("%s-index.yaml", name))
+}
+
+// GetCacheRepositoryDir repository's cache dir
+func GetCacheDir() string {
+	return path.Join(GetCacheHome(), "repository")
+}
 
 // GetCacheHome the cache path of helm
 func GetCacheHome() string {
@@ -22,15 +42,31 @@ func GetCacheHome() string {
 	return cacheDir
 }
 
-// GetCacheRepositoryDir repository's cache dir
-func GetRepoCacheDir() string {
-	return path.Join(GetCacheHome(), "repository")
+// GetConfigDir get helm config directory
+func GetConfigDir() string {
+	configDir := os.Getenv(ConfigHomeEnvVar)
+	if strings.TrimSpace(configDir) == "" {
+		configDir = path.Join(homeDir(), ".config", lp)
+	}
+	return configDir
 }
 
-func MkRepoCacheDirIfNotExist() error {
-	cacheDir := GetRepoCacheDir()
+// CreateHelmDirIfNotExist prepare helm cache dir and repository config dir
+func CreateHelmDirIfNotExist() error {
+	configDir := GetConfigDir()
+	cacheDir := GetCacheDir()
 	if _, err := os.Stat(cacheDir); err != nil && os.IsNotExist(err) {
-		return os.MkdirAll(cacheDir, 0755)
+		if err = os.MkdirAll(cacheDir, 0755); err != nil {
+			logrus.Errorf("make helm cache dir[%s] failed, err:%s", cacheDir, err.Error())
+			return err
+		}
+	}
+
+	if _, err := os.Stat(configDir); err != nil && os.IsNotExist(err) {
+		if err = os.MkdirAll(configDir, 0755); err != nil {
+			logrus.Errorf("make helm config dir[%s] failed, err:%s", configDir, err.Error())
+			return err
+		}
 	}
 	return nil
 }

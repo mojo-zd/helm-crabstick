@@ -18,12 +18,12 @@ type ProjectHandler interface {
 }
 
 type projectHandler struct {
-	harbor config.Harbor
+	repository config.Repository
 }
 
-func NewProjectHandler(harbor config.Harbor) ProjectHandler {
+func NewProjectHandler(repository config.Repository) ProjectHandler {
 	return &projectHandler{
-		harbor: harbor,
+		repository: repository,
 	}
 }
 
@@ -38,7 +38,7 @@ func (p *projectHandler) Create(project *Project) error {
 		http.MethodPost,
 		Value{Path: path.Join(Base, ProjectPath)},
 		bytes.NewBuffer(pro),
-		p.harbor,
+		p.repository,
 	); err != nil {
 		logrus.Errorf("create project[%s] failed, err:%s", string(pro), err.Error())
 		return nil
@@ -56,7 +56,7 @@ func (p *projectHandler) Get(name string) ([]*Project, error) {
 			"name":      name,
 		},
 	}
-	out, err := doRequest(http.MethodGet, value, nil, p.harbor)
+	out, err := doRequest(http.MethodGet, value, nil, p.repository)
 	if err != nil {
 		logrus.Errorf("get project[%s] failed, err:%s", name, err.Error())
 		return nil, err
