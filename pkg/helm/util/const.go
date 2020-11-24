@@ -29,3 +29,8 @@ const (
 	PodSecurityPolicy       = "PodSecurityPolicy"
 	StorageClass            = "StorageClass"
 )
+
+const (
+	DefaultPageSize  = 15
+	DefaultPageIndex = 1
+)

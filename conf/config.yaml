@@ -1,0 +1,11 @@
+address: "0.0.0.0:8010"
+socketAddress: "0.0.0.0:8011"
+expired: 24
+secretkey: "qhcloud"
+middlewares:
+  - jwt2
+namespaces:
+k8s:
+  kubeconfig: /Users/mojo/.kube/configdev # 在本地DEBUG用,配置本地kubeconfig地址，不配置便加载inclusterconfig
+  prometheus:
+runMode: dev

@@ -20,11 +20,11 @@ type RepoHandler interface {
 }
 
 type repo struct {
-	cfg    *config.Config
+	cfg    config.Config
 	client *http.Client
 }
 
-func NewRepo(cfg *config.Config) RepoHandler {
+func NewRepo(cfg config.Config) RepoHandler {
 	return &repo{
 		cfg:    cfg,
 		client: util.NewHttpClient(timeout),

@@ -21,7 +21,7 @@ var (
 )
 
 func TestRepo(t *testing.T) {
-	repo := NewRepo(&conf)
+	repo := NewRepo(conf)
 	if err := repo.CacheIndex(); err != nil {
 		t.Error(err.Error())
 		return

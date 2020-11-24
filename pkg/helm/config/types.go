@@ -15,6 +15,7 @@ type Repository struct {
 // Config ...
 type Config struct {
 	Repository     *Repository `mapstructure:"repository"`
+	Harbor         *Harbor     `mapstructure:"harbor"`
 	KubeConf       string      `mapstructure:"kubeConf"`
 	KubeToken      string      `mapstructure:"kubeToken"`   // option
 	KubeContext    string      `mapstructure:"kubeContext"` // option
@@ -23,4 +24,11 @@ type Config struct {
 	LogLevel       string      `mapstructure:"logLevel"`
 	MaxHistory     int         `mapstructure:"maxHistory"`
 	StorageBackend string      `mapstructure:"storageBackend"` // secrets、configmap
+}
+
+// Harbor information of harbor
+type Harbor struct {
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
+	URL      string `mapstructure:"url"`
 }
