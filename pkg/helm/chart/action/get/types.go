@@ -6,9 +6,11 @@ import (
 	"helm.sh/helm/v3/pkg/action"
 )
 
+const CategoryKey = "category"
+
 type Getter interface {
 	// List get repository's all chart
-	List() ChartVersions
+	List(category string) ChartVersions
 	// Charts find chart information with chart name from repository
 	// it will find the spec chart if version assigned
 	ChartVersion(chartName string) ChartInfo
@@ -18,6 +20,9 @@ type Getter interface {
 
 	// Versions list all version of chart
 	Versions(name string) ChartVersions
+
+	// Catalog get all catalog of chart
+	Category() Category
 }
 
 type ChartVersions []*ChartVersion

@@ -8,7 +8,7 @@ import (
 )
 
 // List get repository's all chart
-func (g *getter) List() ChartVersions {
+func (g *getter) List(category string) ChartVersions {
 	charts := ChartVersions{}
 	chartFilter := make(map[string]*repo.ChartVersion)
 	file, err := g.cache.LoadIndex()
@@ -19,6 +19,17 @@ func (g *getter) List() ChartVersions {
 	// remove repeat and get the latest chart
 	for _, chartVersion := range file.Entries {
 		for _, chart := range chartVersion {
+			// filter spec category chart
+			if category != "" {
+				if chart.Annotations == nil {
+					continue
+				}
+
+				if val, ok := chart.Annotations[CategoryKey]; ok && val != category {
+					continue
+				}
+			}
+
 			if _, ok := chartFilter[chart.Name]; !ok {
 				chartFilter[chart.Name] = chart
 				charts = append(charts, &ChartVersion{
@@ -32,27 +43,5 @@ func (g *getter) List() ChartVersions {
 		}
 	}
 	sort.Sort(charts)
-	return charts
-}
-
-func (g *getter) Versions(name string) ChartVersions {
-	charts := ChartVersions{}
-	file, err := g.cache.LoadIndex()
-	if err != nil {
-		return charts
-	}
-	for _, chartVersion := range file.Entries {
-		for _, chart := range chartVersion {
-			if chart.Name == name {
-				charts = append(charts, &ChartVersion{
-					Name:        chart.Name,
-					Version:     chart.Version,
-					AppVersion:  chart.AppVersion,
-					Description: chart.Description,
-					Icon:        chart.Icon,
-				})
-			}
-		}
-	}
 	return charts
 }

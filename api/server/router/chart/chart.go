@@ -21,5 +21,6 @@ func (c *chartRouter) Routes() []router.Route {
 		router.NewRoute(http.MethodGet, "/charts", c.charts),
 		router.NewRoute(http.MethodGet, "/charts/{name}", c.show),
 		router.NewRoute(http.MethodGet, "/charts/{name}/versions", c.versions),
+		router.NewRoute(http.MethodGet, "/charts/catalog", c.category),
 	}
 }
