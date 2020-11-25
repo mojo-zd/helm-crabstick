@@ -51,7 +51,6 @@ func newAppConfig() appconf.Config {
 			Username: cfg.Repository.Username,
 			Password: cfg.Repository.Password,
 			Cache:    file.GetCacheDir(),
-			Config:   file.GetConfigDir(),
 		},
 	}
 }

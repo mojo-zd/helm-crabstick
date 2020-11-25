@@ -34,6 +34,7 @@ func (g *getter) run(name, version string, client *action.Show) (string, error) 
 		logrus.Errorf("locate chart failed, err:%s", err.Error())
 		return "", err
 	}
+
 	out, err := client.Run(cp)
 	if err != nil {
 		logrus.Errorf("can't show chart information, err:%s", err.Error())

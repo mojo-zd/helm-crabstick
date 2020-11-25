@@ -18,6 +18,7 @@ func NewRouter(cfg config.Config) router.Router {
 
 func (c *chartRouter) Routes() []router.Route {
 	return []router.Route{
-		router.NewRoute(http.MethodGet, "/charts", c.getCharts),
+		router.NewRoute(http.MethodGet, "/charts", c.charts),
+		router.NewRoute(http.MethodGet, "/charts/{name}", c.show),
 	}
 }

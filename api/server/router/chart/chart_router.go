@@ -3,13 +3,24 @@ package chart
 import (
 	"github.com/kataras/iris/v12/context"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager"
+	"helm.sh/helm/v3/pkg/action"
 )
 
 func (c *chartRouter) requestID(ctx context.Context) string {
 	return ctx.Params().Get("id")
 }
 
-func (c *chartRouter) getCharts(ctx context.Context) error {
-	ctx.JSON(manager.NewAppManager(c.cfg).ChartGetter.List())
-	return nil
+func (c *chartRouter) charts(ctx context.Context) error {
+	_, err := ctx.JSON(manager.NewAppManager(c.cfg).ChartGetter.List())
+	return err
+}
+
+func (c *chartRouter) show(ctx context.Context) error {
+	name := ctx.Params().Get("name")
+	_, err := ctx.JSON(map[string]interface{}{
+		"result": manager.NewAppManager(c.cfg).
+			ChartGetter.
+			Show(name, "", action.ShowAll),
+	})
+	return err
 }

@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
+	"github.com/mojo-zd/helm-crabstick/pkg/util/file"
 	"helm.sh/helm/v3/pkg/action"
 )
 
@@ -15,7 +16,7 @@ var (
 		Repository: &config.Repository{
 			Name:  "bitnami",
 			URL:   "https://charts.bitnami.com/bitnami",
-			Cache: fmt.Sprintf("%s/%s", home, ".cache/helm"),
+			Cache: file.GetCacheDir(),
 		},
 		KubeConf: fmt.Sprintf("%s/%s", home, ".kube/config"),
 	}
