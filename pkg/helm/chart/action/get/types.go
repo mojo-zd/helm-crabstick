@@ -15,6 +15,9 @@ type Getter interface {
 
 	// Show show chart detail information
 	Show(name, version string, output action.ShowOutputFormat) string
+
+	// Versions list all version of chart
+	Versions(name string) ChartVersions
 }
 
 type ChartVersions []*ChartVersion

@@ -20,8 +20,8 @@ var (
 		},
 		KubeConf: fmt.Sprintf("%s/.kube/config", home),
 	}
-	namespace   = "demo"
-	releaseName = "bn"
+	namespace   = "kubeapps"
+	releaseName = "kubeapps"
 )
 
 func TestReleaseList(t *testing.T) {

@@ -15,6 +15,12 @@ func (c *chartRouter) charts(ctx context.Context) error {
 	return err
 }
 
+func (c *chartRouter) versions(ctx context.Context) error {
+	chart := ctx.Params().Get("name")
+	_, err := ctx.JSON(manager.NewAppManager(c.cfg).ChartGetter.Versions(chart))
+	return err
+}
+
 func (c *chartRouter) show(ctx context.Context) error {
 	name := ctx.Params().Get("name")
 	_, err := ctx.JSON(map[string]interface{}{
