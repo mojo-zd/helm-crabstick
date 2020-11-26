@@ -6,6 +6,7 @@ import (
 
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
 	"github.com/sirupsen/logrus"
+	"helm.sh/helm/v3/pkg/release"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -14,19 +15,14 @@ const (
 )
 
 // Kind  list all resource's kind of release e.g deploy、ingress、service ...
-func (g *getter) Kind(name, namespace string) []string {
+func (g *getter) Kind(rls *release.Release) []string {
 	out := []string{}
-	release, err := g.Get(name, namespace)
-	if err != nil {
-		logrus.Errorf("not found release [%s] and namespace is [%s], err:%s", name, namespace, err.Error())
-		return out
-	}
 	reg, err := regexp.Compile(kindReg)
 	if err != nil {
 		logrus.Errorf("regexp compile failed, err:%s", err.Error())
 		return out
 	}
-	out = reg.FindAllString(release.Manifest, -1)
+	out = reg.FindAllString(rls.Manifest, -1)
 	kinds := []string{}
 	single := make(map[string]bool)
 	for _, val := range out {
@@ -41,14 +37,14 @@ func (g *getter) Kind(name, namespace string) []string {
 		}
 		kinds = append(kinds, strings.TrimSpace(args[1]))
 	}
-	logrus.Debugf("all kind of release [%s]:%+v", name, kinds)
+	logrus.Debugf("all kind of release [%s]:%+v", rls.Name, kinds)
 	return kinds
 }
 
 // Resources get resources from kubernetes
-func (g *getter) Resources(name, namespace string, opts v1.ListOptions) map[util.KubeKind]interface{} {
+func (g *getter) Resources(name, namespace string, rls *release.Release, opts v1.ListOptions) map[util.KubeKind]interface{} {
 	result := make(map[util.KubeKind]interface{})
-	kinds := g.Kind(name, namespace)
+	kinds := g.Kind(rls)
 	for _, kind := range kinds {
 		out, err := g.manager.GetResources(util.KubeKind(kind)).List(
 			namespace,

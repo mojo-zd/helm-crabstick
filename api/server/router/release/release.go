@@ -18,6 +18,7 @@ func NewRouter(cfg config.Config) router.Router {
 
 func (r *releaseRouter) Routes() []router.Route {
 	return []router.Route{
-		router.NewRoute(http.MethodGet, "/clusters/{cluster_uuid}/releases", r.getReleases),
+		router.NewRoute(http.MethodGet, "/clusters/{cluster_uuid}/releases", r.releases),
+		router.NewRoute(http.MethodGet, "/clusters/{cluster_uuid}/release", r.release),
 	}
 }

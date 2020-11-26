@@ -14,8 +14,8 @@ type Getter interface {
 	List(namespace string, opts util.ListOptions) ([]*release.Release, error)
 	Get(name, namespace string) (*release.Release, error)
 	Status(name, namespace string) (*release.Release, error)
-	Kind(name, namespace string) []string
-	Resources(name, namespace string, opts v1.ListOptions) map[util.KubeKind]interface{}
+	Kind(rls *release.Release) []string
+	Resources(name, namespace string, rls *release.Release, opts v1.ListOptions) map[util.KubeKind]interface{}
 	History(name, namespace string) (ReleaseHistory, error)
 }
 

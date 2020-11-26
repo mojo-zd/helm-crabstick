@@ -22,6 +22,7 @@ func NewAppManager(cfg config.Config) *appManager {
 		logrus.Errorf("manager init failed", err)
 		return nil
 	}
+
 	mgr := &appManager{
 		ChartGetter:   chget.NewGetter(cfg),
 		ReleaseGetter: rlget.NewGetter(cfg, client, kube.NewApiManager(client)),
