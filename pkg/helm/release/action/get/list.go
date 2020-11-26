@@ -3,6 +3,7 @@ package get
 import (
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/storage"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
+	"github.com/sirupsen/logrus"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/release"
 )
@@ -15,6 +16,7 @@ func (g *getter) List(namespace string, opts util.ListOptions) ([]*release.Relea
 
 	releases, err := client.Run()
 	if err != nil {
+		logrus.Errorf("can't list release, err:%s", err.Error())
 		return nil, err
 	}
 	return filterWithOpts(releases, opts), nil

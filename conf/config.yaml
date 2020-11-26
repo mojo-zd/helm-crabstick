@@ -6,7 +6,7 @@ middlewares:
   - jwt2
 namespaces:
 k8s:
-  kubeconfig: /Users/mojo/.kube/configdev # 在本地DEBUG用,配置本地kubeconfig地址，不配置便加载inclusterconfig
+  kubeconfig: /Users/mojo/.kube/config # 在本地DEBUG用,配置本地kubeconfig地址，不配置便加载inclusterconfig
   prometheus:
 repository: # 正式环境使用harbor作为应用仓库
   name: bitnami

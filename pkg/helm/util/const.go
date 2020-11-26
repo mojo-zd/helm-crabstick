@@ -1,5 +1,7 @@
 package util
 
+const FormatStripingYMDHMS = "2006-01-02 15:04:05"
+
 // the label of deploy、service、cm and so on include when deploy it through helm
 const SelectorLabelKey = "app.kubernetes.io/instance"
 
