@@ -4,6 +4,7 @@ import (
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/cache"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
 	"helm.sh/helm/v3/pkg/action"
+	"helm.sh/helm/v3/pkg/chart"
 )
 
 const CategoryKey = "category"
@@ -29,11 +30,14 @@ type ChartVersions []*ChartVersion
 type Versions []*Version
 
 type ChartVersion struct {
-	Name        string
-	Version     string
-	AppVersion  string
-	Description string
-	Icon        string
+	Name        string              `json:"name"`
+	Version     string              `json:"version"`
+	AppVersion  string              `json:"appVersion"`
+	Description string              `json:"description"`
+	Icon        string              `json:"icon"`
+	Home        string              `json:"home"`
+	Sources     []string            `json:"sources"`
+	Maintainers []*chart.Maintainer `json:"maintainers"`
 }
 
 type ChartInfo struct {

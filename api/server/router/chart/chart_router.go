@@ -29,10 +29,8 @@ func (c *chartRouter) category(ctx context.Context) error {
 
 func (c *chartRouter) show(ctx context.Context) error {
 	name := ctx.Params().Get("name")
-	_, err := ctx.JSON(map[string]interface{}{
-		"result": manager.NewAppManager(c.cfg).
-			ChartGetter.
-			Show(name, "", action.ShowAll),
-	})
+	_, err := ctx.JSON(manager.NewAppManager(c.cfg).
+		ChartGetter.
+		Show(name, "", action.ShowReadme))
 	return err
 }

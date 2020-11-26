@@ -15,13 +15,16 @@ func initialize(cfg appconf.Config) {
 	// prepare helm dir e.g. cache dir、config dir
 	file.CreateHelmDirIfNotExist()
 	// cache repository index.yaml
+	repo := repository.NewRepo(cfg)
 	if config.GetConfig().RunMode == "dev" {
 		if !file.RepoIndexExist(cfg.Repository.Name) {
-			repository.NewRepo(cfg).CacheIndex()
+			repo.Config()
+			repo.CacheIndex()
 		}
 		return
 	}
-	repository.NewRepo(cfg).CacheIndex()
+	repo.Config()
+	repo.CacheIndex()
 }
 
 func routes() []router.Router {
@@ -51,6 +54,7 @@ func newAppConfig() appconf.Config {
 			Username: cfg.Repository.Username,
 			Password: cfg.Repository.Password,
 			Cache:    file.GetCacheDir(),
+			Config:   file.GetConfig(),
 		},
 	}
 }

@@ -16,6 +16,7 @@ var (
 const timeout = 2 * time.Minute
 
 type RepoHandler interface {
+	Config() error
 	CacheIndex() error
 }
 

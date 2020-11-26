@@ -15,6 +15,9 @@ func (g *getter) Versions(name string) ChartVersions {
 					AppVersion:  chart.AppVersion,
 					Description: chart.Description,
 					Icon:        chart.Icon,
+					Home:        chart.Home,
+					Maintainers: chart.Maintainers,
+					Sources:     chart.Sources,
 				})
 			}
 		}

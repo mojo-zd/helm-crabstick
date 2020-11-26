@@ -26,6 +26,5 @@ func NewSetting(config config.Config) *cli.EnvSettings {
 	setting.RepositoryConfig = config.Repository.Config
 	setting.MaxHistory = config.Repository.MaxHistory
 	setting.Debug = debug
-
 	return setting
 }

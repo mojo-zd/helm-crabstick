@@ -51,6 +51,11 @@ func GetConfigDir() string {
 	return configDir
 }
 
+// GetConfig return repositories.yaml's location
+func GetConfig() string {
+	return path.Join(GetConfigDir(), "repositories.yaml")
+}
+
 // CreateHelmDirIfNotExist prepare helm cache dir and repository config dir
 func CreateHelmDirIfNotExist() error {
 	configDir := GetConfigDir()

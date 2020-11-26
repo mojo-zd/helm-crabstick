@@ -1,6 +1,8 @@
 package get
 
 import (
+	"time"
+
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
 	"github.com/sirupsen/logrus"
 	"helm.sh/helm/v3/pkg/action"
@@ -21,20 +23,14 @@ func (g *getter) run(name, version string, client *action.Show) (string, error) 
 		logrus.Debug("setting version to >0.0.0-0")
 		client.Version = ">0.0.0-0"
 	}
-
-	chartOption, err := util.LoadChartOptions(g.cfg)
-	if err != nil {
-		logrus.Errorf("can't instance chart options object, err:%s", err.Error())
-		return "", err
-	}
-	chartOption.Version = version
-	client.ChartPathOptions = chartOption
+	client.ChartPathOptions = action.ChartPathOptions{Version: version}
+	start := time.Now()
 	cp, err := client.ChartPathOptions.LocateChart(name, util.NewSetting(g.cfg))
 	if err != nil {
 		logrus.Errorf("locate chart failed, err:%s", err.Error())
 		return "", err
 	}
-
+	logrus.Info("chart to finish", time.Now().Sub(start))
 	out, err := client.Run(cp)
 	if err != nil {
 		logrus.Errorf("can't show chart information, err:%s", err.Error())
