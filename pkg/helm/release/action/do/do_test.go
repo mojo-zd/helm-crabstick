@@ -333,15 +333,25 @@ var (
 	}
 	namespace   = "demo"
 	releaseName = "bn"
-	chart       = "apache"
+	chartName   = "apache"
 	version     = "8.0.0"
 )
 
 func TestUpgrade(t *testing.T) {
-	_, err := NewDoer(getClient(t), conf).Upgrade(releaseName, chart, version, values, namespace)
+	_, err := NewDoer(getClient(t), conf).Upgrade(releaseName, chartName, version, values, namespace)
 	if err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestInstall(t *testing.T) {
+	doer := NewDoer(getClient(t), conf)
+	rls, err := doer.Install(chartName, releaseName, namespace, values, DoerOptions{Annotation: map[string]string{"author": "mojo"}})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	t.Log(rls.Name, rls.Chart.Metadata.Annotations["author"])
 }
 
 func TestDelete(t *testing.T) {

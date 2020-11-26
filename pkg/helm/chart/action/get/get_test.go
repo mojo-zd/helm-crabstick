@@ -25,7 +25,7 @@ var (
 )
 
 func TestList(t *testing.T) {
-	charts := g.List()
+	charts := g.List("")
 	for _, chart := range charts {
 		t.Log(chart.Name, chart.Version, chart.AppVersion, chart.Icon, chart.Description)
 	}

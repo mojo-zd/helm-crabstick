@@ -23,13 +23,13 @@ import (
 
 // Install install chart
 func (d *doer) Install(chartName, name, namespace, valueString string, opts DoerOptions) (*release.Release, error) {
-	chartOpts, err := util.LoadChartOptions(d.config)
+	chartOpts, err := util.LoadChartOptions(d.cfg)
 	if err != nil {
 		logrus.Errorf("load chart options failed, err:%s", err)
 
 		return nil, err
 	}
-	setting := util.NewSetting(d.config)
+	setting := util.NewSetting(d.cfg)
 	cfg := d.buildActionConfiguration(namespace)
 	install := action.NewInstall(cfg)
 	install.Namespace = namespace
@@ -132,7 +132,7 @@ func (d *doer) buildActionConfiguration(namespace string) *action.Configuration 
 	store := storage.Init(secrets)
 
 	actionConfig := new(action.Configuration)
-	config, _ := d.config.ConfigFlags().ToRESTConfig()
+	config, _ := d.cfg.ConfigFlags().ToRESTConfig()
 	restClientGetter := NewConfigFlagsFromCluster(namespace, config)
 	actionConfig.RESTClientGetter = restClientGetter
 	actionConfig.KubeClient = kube.New(restClientGetter)
