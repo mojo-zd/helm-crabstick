@@ -340,7 +340,13 @@ var (
 )
 
 func TestUpgrade(t *testing.T) {
-	_, err := NewDoer(getClient(t), conf).Upgrade(releaseName, chartName, version, values, namespace)
+	_, err := NewDoer(getClient(t), conf).Upgrade(types.UpgradeOptions{
+		Name:      releaseName,
+		Chart:     chartName,
+		Version:   version,
+		Values:    values,
+		Namespace: namespace,
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -348,8 +354,8 @@ func TestUpgrade(t *testing.T) {
 
 func TestInstall(t *testing.T) {
 	doer := NewDoer(getClient(t), conf)
-	rls, err := doer.Install(types.ReleaseCreateOptions{
-		ChartName: chartName,
+	rls, err := doer.Install(types.CreateOptions{
+		Chart:     chartName,
 		Name:      releaseName,
 		Namespace: namespace,
 		Values:    values,

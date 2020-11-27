@@ -23,14 +23,14 @@ import (
 )
 
 // Install install chart
-func (d *doer) Install(createOpts types.ReleaseCreateOptions) (*release.Release, error) {
+func (d *doer) Install(createOpts types.CreateOptions) (*release.Release, error) {
 	setting := util.NewSetting(d.cfg)
 	cfg := d.buildActionConfiguration(createOpts.Namespace)
 	install := action.NewInstall(cfg)
 	install.Namespace = createOpts.Namespace
 	chartOpts := action.ChartPathOptions{Version: createOpts.Version}
 	install.ChartPathOptions = chartOpts
-	chartObj, err := d.installPre(install, setting, os.Stdout, createOpts.Name, createOpts.ChartName)
+	chartObj, err := d.installPre(install, setting, os.Stdout, createOpts.Name, createOpts.Chart)
 	if createOpts.Options.Annotation != nil {
 		for key, value := range createOpts.Options.Annotation {
 			chartObj.Metadata.Annotations[key] = value

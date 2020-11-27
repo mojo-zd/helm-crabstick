@@ -10,13 +10,13 @@ import (
 // Doer include install、uninstall operator
 type Doer interface {
 	// Install install chart
-	Install(createOpt types.ReleaseCreateOptions) (*release.Release, error)
+	Install(createOpt types.CreateOptions) (*release.Release, error)
 
 	// Delete uninstall release
 	Delete(name, namespace string) (*release.UninstallReleaseResponse, error)
 
 	// Upgrade upgrade release
-	Upgrade(release, chart, version, values, namespace string) (*release.Release, error)
+	Upgrade(opts types.UpgradeOptions) (*release.Release, error)
 }
 
 type doer struct {

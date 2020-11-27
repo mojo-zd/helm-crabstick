@@ -37,7 +37,7 @@ func (r *releaseRouter) release(ctx context.Context) error {
 }
 
 func (r *releaseRouter) install(ctx context.Context) error {
-	createOpts := types.ReleaseCreateOptions{}
+	createOpts := types.CreateOptions{}
 	if err := ctx.ReadJSON(&createOpts); err != nil {
 		return err
 	}
@@ -58,5 +58,30 @@ func (r *releaseRouter) uninstall(ctx context.Context) error {
 		return err
 	}
 	_, err = ctx.JSON(resp)
+	return err
+}
+
+func (r *releaseRouter) upgrade(ctx context.Context) error {
+	opts := types.UpgradeOptions{}
+	err := ctx.ReadJSON(&opts)
+	if err != nil {
+		return err
+	}
+	rls, err := manager.NewAppManager(r.cfg).ReleaseDoer.Upgrade(opts)
+	if err != nil {
+		return err
+	}
+	_, err = ctx.JSON(rls)
+	return err
+}
+
+func (r *releaseRouter) history(ctx context.Context) error {
+	name := ctx.Params().Get("name")
+	namespace := ctx.URLParam("namespace")
+	history, err := manager.NewAppManager(r.cfg).ReleaseGetter.History(name, namespace)
+	if err != nil {
+		return err
+	}
+	_, err = ctx.JSON(history)
 	return err
 }
