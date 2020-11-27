@@ -2,18 +2,15 @@ package do
 
 import (
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
+	"github.com/mojo-zd/helm-crabstick/pkg/helm/types"
 	"helm.sh/helm/v3/pkg/release"
 	"k8s.io/client-go/kubernetes"
 )
 
-type DoerOptions struct {
-	Annotation map[string]string
-}
-
 // Doer include install、uninstall operator
 type Doer interface {
 	// Install install chart
-	Install(chartName, name, namespace, valueString string, opts DoerOptions) (*release.Release, error)
+	Install(createOpt types.ReleaseCreateOptions) (*release.Release, error)
 
 	// Delete uninstall release
 	Delete(name, namespace string) (*release.UninstallReleaseResponse, error)

@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/mojo-zd/helm-crabstick/pkg/helm/types"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -22,21 +23,16 @@ import (
 )
 
 // Install install chart
-func (d *doer) Install(chartName, name, namespace, valueString string, opts DoerOptions) (*release.Release, error) {
-	chartOpts, err := util.LoadChartOptions(d.cfg)
-	if err != nil {
-		logrus.Errorf("load chart options failed, err:%s", err)
-
-		return nil, err
-	}
+func (d *doer) Install(createOpts types.ReleaseCreateOptions) (*release.Release, error) {
 	setting := util.NewSetting(d.cfg)
-	cfg := d.buildActionConfiguration(namespace)
+	cfg := d.buildActionConfiguration(createOpts.Namespace)
 	install := action.NewInstall(cfg)
-	install.Namespace = namespace
+	install.Namespace = createOpts.Namespace
+	chartOpts := action.ChartPathOptions{Version: createOpts.Version}
 	install.ChartPathOptions = chartOpts
-	chartObj, err := d.installPre(install, setting, os.Stdout, name, chartName)
-	if opts.Annotation != nil {
-		for key, value := range opts.Annotation {
+	chartObj, err := d.installPre(install, setting, os.Stdout, createOpts.Name, createOpts.ChartName)
+	if createOpts.Options.Annotation != nil {
+		for key, value := range createOpts.Options.Annotation {
 			chartObj.Metadata.Annotations[key] = value
 		}
 	}
@@ -44,7 +40,7 @@ func (d *doer) Install(chartName, name, namespace, valueString string, opts Doer
 		return nil, err
 	}
 
-	val, err := util.GetValues(valueString)
+	val, err := util.GetValues(createOpts.Values)
 	if err != nil {
 		return nil, err
 	}

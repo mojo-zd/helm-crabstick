@@ -5,6 +5,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/mojo-zd/helm-crabstick/pkg/helm/types"
+
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
 	"k8s.io/client-go/kubernetes"
 )
@@ -346,7 +348,13 @@ func TestUpgrade(t *testing.T) {
 
 func TestInstall(t *testing.T) {
 	doer := NewDoer(getClient(t), conf)
-	rls, err := doer.Install(chartName, releaseName, namespace, values, DoerOptions{Annotation: map[string]string{"author": "mojo"}})
+	rls, err := doer.Install(types.ReleaseCreateOptions{
+		ChartName: chartName,
+		Name:      releaseName,
+		Namespace: namespace,
+		Values:    values,
+		Options:   types.DoerOptions{Annotation: map[string]string{"author": "mojo"}},
+	})
 	if err != nil {
 		t.Error(err)
 		return

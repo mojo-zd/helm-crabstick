@@ -26,6 +26,7 @@ func NewAppManager(cfg config.Config) *appManager {
 	mgr := &appManager{
 		ChartGetter:   chget.NewGetter(cfg),
 		ReleaseGetter: rlget.NewGetter(cfg, client, kube.NewApiManager(client)),
+		ReleaseDoer:   rldo.NewDoer(client, cfg),
 	}
 
 	return mgr
