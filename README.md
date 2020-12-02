@@ -38,6 +38,42 @@
 ### 创建时候指定namespace
 没有namespace需要手动创建
 
+### 证书
+#### csr
+```
+var csr = `[ req ]
+default_bits = 2048
+prompt = no
+default_md = sha256
+req_extensions = req_ext
+distinguished_name = dn
+
+[ dn ]
+C = CN
+ST = SC
+L = CD
+O = system:masters // kubenretes group
+OU = CLOUD
+CN = cluster-admin // clusterrole name
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = kubernetes
+DNS.2 = kubernetes.default
+DNS.3 = kubernetes.default.svc
+DNS.4 = kubernetes.default.svc.cluster
+DNS.5 = kubernetes.default.svc.cluster.local
+
+[ v3_ext ]
+authorityKeyIdentifier=keyid,issuer:always
+basicConstraints=CA:FALSE
+keyUsage=keyEncipherment,dataEncipherment
+extendedKeyUsage=serverAuth,clientAuth
+subjectAltName=@alt_names`
+```
+
 ### QA
 1. 安装时是否需要指定namespace (不指定可以选择强制创建对应的namespace)
 2. 获取列表是否需要指定namespace
@@ -52,6 +88,5 @@ sync:
       schedule: "0 * * * *"
       successfulJobsHistoryLimit: 1
 EOF
-
 
 `https://github.com/jeremykross/konstellate`

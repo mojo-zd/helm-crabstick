@@ -16,4 +16,6 @@ repository: # 正式环境使用harbor作为应用仓库
   maxHistory: 20 # the max history of helm release to list
   storageBackend: # default to use secrets to storage release
   type: ordinary  # ordinary(e.g. bitnami)、harbor
+auth:
+  url: http://10.60.41.127:35357/v3
 runMode: dev
