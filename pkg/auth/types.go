@@ -1,4 +1,4 @@
-package backend
+package auth
 
 // Services ...
 type Services struct {

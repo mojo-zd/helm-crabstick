@@ -1,4 +1,4 @@
-package backend
+package auth
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 var (
 	clusterUUID = "8b891540-650a-4f2a-839f-82e8b2cc222e"
 	magnum      = "magnum"
-	stoneCli    = NewKeystone("http://10.60.41.127:35357/v3", "gAAAAABfxvQn1Xoo-XleRdNCUzPDwaNAPxVft0rOJvoE_Zo0OwqK1aGN2uT6HVBMic1wP_fdPqOPeQ65JA8a4fXUifNhXyxrSwsjMHCXUKE62kh9QFSC-m-q0_dCGW6K0-PSLXJi5IpR6kwXKC_weEgE9MYwdP5fqg")
+	stoneCli    = NewKeystone("http://10.60.41.127:35357/v3", "gAAAAABfyEKUWsORyjwKYTa5ZT_jH0_xITTuf4d0R7jPmymO0JTB7JAWVxHwTU7Ys4TWeTLXGdn5qg0iJcIzPAKxI8n96UddWslP9hoizF8jFJ4bVB2hIE5JuTlqC-YxVRrwg6V25280BgP71L-mCxKDICXzz_kQwA")
 )
 
 func TestService(t *testing.T) {

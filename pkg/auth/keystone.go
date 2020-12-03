@@ -1,6 +1,7 @@
-package backend
+package auth
 
 import (
+	"crypto/x509"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -43,7 +44,7 @@ func (k *keystone) Sign(magnumURL, cluster string) (string, string, error) {
 
 	csr, err := encrypt.GenCSR(key)
 	if err != nil {
-		logrus.Errorln("can't create crs")
+		logrus.Errorln("can't create csr")
 		return "", "", nil
 	}
 	var csrStr string
@@ -51,6 +52,13 @@ func (k *keystone) Sign(magnumURL, cluster string) (string, string, error) {
 		logrus.Errorln("csr to string failed", err.Error())
 		return "", "", err
 	}
+
+	privateKey, err = encrypt.X509ToString(encrypt.RsaPrivateKeyType, x509.MarshalPKCS1PrivateKey(key))
+	if err != nil {
+		logrus.Errorln("private key to string failed", err.Error())
+		return "", "", err
+	}
+
 	resp, err := req.SetBody(map[string]interface{}{
 		"bay_uuid": cluster,
 		"csr":      csrStr,
@@ -59,8 +67,9 @@ func (k *keystone) Sign(magnumURL, cluster string) (string, string, error) {
 		logrus.Errorf("request[%s] occur exception, err:%s", u.String(), err.Error())
 		return privateKey, cert, err
 	}
+
 	cer := Certificate{}
-	if err = json.Unmarshal(resp.Body(), &cert); err != nil {
+	if err = json.Unmarshal(resp.Body(), &cer); err != nil {
 		logrus.Errorf("can't unmarshal to Certificate, body:%s, err:%s", resp.Body(), err.Error())
 		return "", "", err
 	}
