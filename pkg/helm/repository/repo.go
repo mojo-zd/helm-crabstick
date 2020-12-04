@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	resty "github.com/go-resty/resty/v2"
 	"github.com/gofrs/flock"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
 	"github.com/mojo-zd/helm-crabstick/pkg/util/file"
@@ -90,27 +91,17 @@ func (r *repo) CacheIndex() error {
 		return err
 	}
 
-	request, err := http.NewRequest(http.MethodGet, r.indexURL(url), nil)
+	req := resty.New().R()
+	req.SetBasicAuth(r.cfg.Repository.Username, r.cfg.Repository.Password)
+	resp, err := req.Get(r.indexURL(url))
 	if err != nil {
 		logrus.Errorf("new request failed err:%s", err.Error())
 	}
 	logrus.Infof("start sync repository[%s] index...", r.indexURL(url))
-	response, err := r.client.Do(request)
-	if err != nil {
-		logrus.Errorf("can't get repository[%s] index.yaml, err:%s", r.indexURL(url), err.Error())
-		return err
+	if resp.StatusCode() >= http.StatusBadRequest {
+		return errors.New(fmt.Sprintf("can't get repository[%s] index file", r.cfg.Repository.Name))
 	}
-
-	defer func() {
-		response.Body.Close()
-	}()
-
-	data, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		logrus.Errorf("can't read response data, err:%s", err.Error())
-		return err
-	}
-	return ioutil.WriteFile(file.GetIndexFile(rep.Name), data, 0755)
+	return ioutil.WriteFile(file.GetIndexFile(rep.Name), resp.Body(), 0755)
 }
 
 func (r *repo) indexURL(repoURL string) string {

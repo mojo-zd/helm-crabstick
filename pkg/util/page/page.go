@@ -71,5 +71,6 @@ func (page *Pagination) section(data interface{}) {
 	} else {
 		page.Rows = value.Slice(int(start), int(end)).Interface()
 	}
+	page.Total = len
 	return
 }
