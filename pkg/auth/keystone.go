@@ -18,6 +18,7 @@ const (
 	services     = "/services"
 	endpoints    = "/endpoints"
 	certificates = "/certificates"
+	clusters     = "/clusters"
 )
 
 type keystone struct {
@@ -58,13 +59,13 @@ func (k *keystone) Sign(magnumURL, cluster string) (string, string, error) {
 		logrus.Errorln("private key to string failed", err.Error())
 		return "", "", err
 	}
-
+	logrus.Debugln("request url is", u.String())
 	resp, err := req.SetBody(map[string]interface{}{
 		"bay_uuid": cluster,
 		"csr":      csrStr,
 	}).Post(u.String())
 	if err != nil {
-		logrus.Errorf("request[%s] occur exception, err:%s", u.String(), err.Error())
+		logrus.Errorf("request[%s] occur exception, method: %s, err:%s", u.String(), req.Method, err.Error())
 		return privateKey, cert, err
 	}
 
@@ -86,7 +87,7 @@ func (k *keystone) CA(magnumURL, cluster string) (Certificate, error) {
 	logrus.Debugln("request url is", u.String())
 	resp, err := req.Get(u.String())
 	if err != nil {
-		logrus.Errorf("request[%s] occur exception, err:%s", u.String(), err.Error())
+		logrus.Errorf("request[%s] occur exception, method: %s, err:%s", u.String(), req.Method, err.Error())
 		return out, err
 	}
 
@@ -107,7 +108,7 @@ func (k *keystone) Endpoints(queries map[string]string) (Endpoints, error) {
 	logrus.Debugln("request url is", u.String())
 	resp, err := req.Get(u.String())
 	if err != nil {
-		logrus.Errorf("request[%s] occur exception, err:%s", u.String(), err.Error())
+		logrus.Errorf("request[%s] occur exception, method: %s, err:%s", u.String(), req.Method, err.Error())
 		return out, err
 	}
 
@@ -124,10 +125,10 @@ func (k *keystone) Service(name string) (Service, error) {
 	// set header info for request
 	k.setAuth(req).withJsonContentType(req)
 	u := k.combine([]string{services}, map[string]string{"name": name})
-	logrus.Debugln("request url is", u.String())
+	logrus.Debugf("request url is %s", u.String())
 	resp, err := req.Get(u.String())
 	if err != nil {
-		logrus.Errorf("request[%s] occur exception, err:%s", u.String(), err.Error())
+		logrus.Errorf("request[%s] occur exception, method: %s, err:%s", u.String(), req.Method, err.Error())
 		return Service{}, err
 	}
 	out := Services{}
@@ -141,6 +142,25 @@ func (k *keystone) Service(name string) (Service, error) {
 	}
 
 	return out.Services[0], nil
+}
+
+func (k *keystone) Cluster(magnumURL, uuid string) (Cluster, error) {
+	out := Cluster{}
+	req := resty.New().R()
+	// set header info for request
+	k.setAuth(req).withJsonContentType(req)
+	u := k.combine([]string{magnumURL, clusters, uuid}, nil)
+	logrus.Debugln("request url is", u.String())
+	resp, err := req.Get(u.String())
+	if err != nil {
+		logrus.Errorf("request[%s] occur exception, method: %s, err:%s", u.String(), req.Method, err.Error())
+		return out, err
+	}
+	if err = json.Unmarshal(resp.Body(), &out); err != nil {
+		logrus.Errorf("can't unmarshal to Cluster, body:%s, err:%s", resp.Body(), err.Error())
+		return out, err
+	}
+	return out, nil
 }
 
 func (k *keystone) combine(paths []string, queries map[string]string) *url.URL {

@@ -1,16 +1,8 @@
 package get
 
 import (
-	"encoding/json"
-	"fmt"
 	"regexp"
 	"testing"
-
-	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager/kube"
-
-	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
 )
 
 const manifest = `# Source: apache/templates/svc.yaml
@@ -140,27 +132,27 @@ func TestManifest(t *testing.T) {
 }
 
 func TestManifestResources(t *testing.T) {
-	restConf, err := conf.ConfigFlags().ToRESTConfig()
-	if err != nil {
-		t.Fatal(err)
-		return
-	}
-	client, err := kubernetes.NewForConfig(restConf)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	getter := NewGetter(conf, client, kube.NewApiManager(client))
-	rels, err := getter.List(namespace, util.ListOptions{})
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	for _, rel := range rels {
-		out := getter.Resources(rel.Name, namespace, v1.ListOptions{
-			LabelSelector: fmt.Sprintf("%s=%s", util.SelectorLabelKey, rel.Name),
-		})
-		o, _ := json.Marshal(out)
-		t.Log("kubernetes resources:", string(o))
-	}
+	//restConf, err := conf.ConfigFlags().ToRESTConfig()
+	//if err != nil {
+	//	t.Fatal(err)
+	//	return
+	//}
+	//client, err := kubernetes.NewForConfig(restConf)
+	//if err != nil {
+	//	t.Fatal(err)
+	//}
+	//
+	//getter := NewGetter(conf, client, kube.NewApiManager(client))
+	//rels, err := getter.List(namespace, util.ListOptions{})
+	//if err != nil {
+	//	t.Error(err)
+	//	return
+	//}
+	//for _, rel := range rels {
+	//	out := getter.Resources(rel.Name, namespace, v1.ListOptions{
+	//		LabelSelector: fmt.Sprintf("%s=%s", util.SelectorLabelKey, rel.Name),
+	//	})
+	//	o, _ := json.Marshal(out)
+	//	t.Log("kubernetes resources:", string(o))
+	//}
 }

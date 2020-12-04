@@ -3,17 +3,20 @@ package release
 import (
 	"net/http"
 
+	"github.com/mojo-zd/helm-crabstick/pkg/manager"
+
 	"github.com/mojo-zd/helm-crabstick/api/server/router"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
 )
 
 type releaseRouter struct {
-	routes []router.Route
-	cfg    config.Config
+	routes     []router.Route
+	cfg        config.Config
+	clusterMgr manager.Manager
 }
 
-func NewRouter(cfg config.Config) router.Router {
-	return &releaseRouter{cfg: cfg}
+func NewRouter(cfg config.Config, clusterMgr manager.Manager) router.Router {
+	return &releaseRouter{cfg: cfg, clusterMgr: clusterMgr}
 }
 
 func (r *releaseRouter) Routes() []router.Route {

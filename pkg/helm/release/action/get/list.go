@@ -10,10 +10,9 @@ import (
 
 // List list all release by condition
 func (g *getter) List(namespace string, opts util.ListOptions) ([]*release.Release, error) {
-	cfg := storage.ActionConfiguration(g.client, g.config, namespace)
+	cfg := storage.ActionConfiguration(*g.cluster, g.config, namespace)
 	client := action.NewList(cfg)
 	client.SetStateMask()
-
 	releases, err := client.Run()
 	if err != nil {
 		logrus.Errorf("can't list release, err:%s", err.Error())

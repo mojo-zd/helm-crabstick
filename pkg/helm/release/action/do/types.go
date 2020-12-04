@@ -3,8 +3,8 @@ package do
 import (
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/types"
+	"github.com/mojo-zd/helm-crabstick/pkg/manager"
 	"helm.sh/helm/v3/pkg/release"
-	"k8s.io/client-go/kubernetes"
 )
 
 // Doer include install、uninstall operator
@@ -20,14 +20,14 @@ type Doer interface {
 }
 
 type doer struct {
-	client kubernetes.Interface
-	cfg    config.Config
+	cluster *manager.Cluster
+	cfg     config.Config
 }
 
 // NewDoer ...
-func NewDoer(client kubernetes.Interface, conf config.Config) Doer {
+func NewDoer(cluster *manager.Cluster, conf config.Config) Doer {
 	return &doer{
-		client: client,
-		cfg:    conf,
+		cluster: cluster,
+		cfg:     conf,
 	}
 }

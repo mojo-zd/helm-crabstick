@@ -15,9 +15,10 @@ import (
 
 // Config provides the configuration for the API server
 type Config struct {
-	Address    string
-	Middleware []string
-	JWTSecret  string
+	Address      string
+	Middleware   []string
+	JWTSecret    string
+	KeystoneAddr string
 }
 
 // Server contains instance details for the server

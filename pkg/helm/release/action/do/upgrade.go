@@ -12,7 +12,7 @@ import (
 )
 
 func (d *doer) Upgrade(opts types.UpgradeOptions) (*release.Release, error) {
-	configuration := storage.ActionConfiguration(d.client, d.cfg, opts.Namespace)
+	configuration := storage.ActionConfiguration(*d.cluster, d.cfg, opts.Namespace)
 	client := action.NewUpgrade(configuration)
 	client.Namespace = opts.Namespace
 	return d.runUpgrade(opts, client)

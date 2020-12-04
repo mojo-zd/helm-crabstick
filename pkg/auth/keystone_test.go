@@ -10,6 +10,27 @@ var (
 	stoneCli    = NewKeystone("http://10.60.41.127:35357/v3", "gAAAAABfyEKUWsORyjwKYTa5ZT_jH0_xITTuf4d0R7jPmymO0JTB7JAWVxHwTU7Ys4TWeTLXGdn5qg0iJcIzPAKxI8n96UddWslP9hoizF8jFJ4bVB2hIE5JuTlqC-YxVRrwg6V25280BgP71L-mCxKDICXzz_kQwA")
 )
 
+func TestCluster(t *testing.T) {
+	service, err := stoneCli.Service(magnum)
+	if err != nil {
+		t.Fatal("can't get service", err)
+	}
+	endpoints, err := stoneCli.Endpoints(map[string]string{"service_id": service.ID, "interface": "public"})
+	if err != nil {
+		t.Fatal("can't get endpoint", err)
+	}
+	if len(endpoints.Endpoints) == 0 {
+		t.Error("not found magnum endpoint")
+		return
+	}
+	mag := endpoints.Endpoints[0]
+	cluster, err := stoneCli.Cluster(mag.URL, clusterUUID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(cluster)
+}
+
 func TestService(t *testing.T) {
 	service, err := stoneCli.Service(magnum)
 	if err != nil {

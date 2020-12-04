@@ -8,7 +8,7 @@ import (
 )
 
 func (d *doer) Delete(name, namespace string) (*release.UninstallReleaseResponse, error) {
-	configuration := storage.ActionConfiguration(d.client, d.cfg, namespace)
+	configuration := storage.ActionConfiguration(*d.cluster, d.cfg, namespace)
 	uninstall := action.NewUninstall(configuration)
 	out, err := uninstall.Run(name)
 	if err != nil {

@@ -1,5 +1,9 @@
 package auth
 
+const (
+	HealthStatus = "HEALTHY"
+)
+
 // Services ...
 type Services struct {
 	Services []Service `json:"services"`
@@ -35,4 +39,14 @@ type Certificate struct {
 	ClusterUUID string `json:"cluster_uuid"`
 	CSR         string `json:"csr"`
 	PEM         string `json:"pem"`
+}
+
+type Cluster struct {
+	UUID         string `json:"uuid"`
+	Name         string `json:"name"`
+	NodeCount    int    `json:"node_count"`
+	MasterCount  int    `json:"master_count"`
+	Status       string `json:"status"`
+	HealthStatus string `json:"health_status"`
+	ApiAddress   string `json:"api_address"`
 }

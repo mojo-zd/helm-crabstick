@@ -4,9 +4,9 @@ import (
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager/kube"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
+	"github.com/mojo-zd/helm-crabstick/pkg/manager"
 	"helm.sh/helm/v3/pkg/release"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
 )
 
 // Getter helm list、 get operator
@@ -20,16 +20,16 @@ type Getter interface {
 }
 
 type getter struct {
-	client  kubernetes.Interface
+	cluster *manager.Cluster
 	config  config.Config
 	manager *kube.ApiManager
 }
 
 // NewGetter ...
-func NewGetter(config config.Config, client kubernetes.Interface, mgr *kube.ApiManager) Getter {
+func NewGetter(config config.Config, cluster *manager.Cluster, mgr *kube.ApiManager) Getter {
 	return &getter{
 		config:  config,
-		client:  client,
+		cluster: cluster,
 		manager: mgr,
 	}
 }

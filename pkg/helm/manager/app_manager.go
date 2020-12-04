@@ -6,8 +6,7 @@ import (
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager/kube"
 	rldo "github.com/mojo-zd/helm-crabstick/pkg/helm/release/action/do"
 	rlget "github.com/mojo-zd/helm-crabstick/pkg/helm/release/action/get"
-	"github.com/sirupsen/logrus"
-	"k8s.io/client-go/kubernetes"
+	"github.com/mojo-zd/helm-crabstick/pkg/manager"
 )
 
 type appManager struct {
@@ -16,26 +15,11 @@ type appManager struct {
 	ReleaseGetter rlget.Getter
 }
 
-func NewAppManager(cfg config.Config) *appManager {
-	client, err := getClient(cfg)
-	if err != nil {
-		logrus.Errorf("manager init failed", err)
-		return nil
-	}
-
-	mgr := &appManager{
+// NewAppManager ...
+func NewAppManager(cfg config.Config, cluster *manager.Cluster) *appManager {
+	return &appManager{
 		ChartGetter:   chget.NewGetter(cfg),
-		ReleaseGetter: rlget.NewGetter(cfg, client, kube.NewApiManager(client)),
-		ReleaseDoer:   rldo.NewDoer(client, cfg),
+		ReleaseGetter: rlget.NewGetter(cfg, cluster, kube.NewApiManager(cluster.Client)),
+		ReleaseDoer:   rldo.NewDoer(cluster, cfg),
 	}
-
-	return mgr
-}
-
-func getClient(cfg config.Config) (kubernetes.Interface, error) {
-	restcfg, err := cfg.ConfigFlags().ToRESTConfig()
-	if err != nil {
-		return nil, err
-	}
-	return kubernetes.NewForConfig(restcfg)
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/mojo-zd/helm-crabstick/cmd/crabstick/config"
 	appconf "github.com/mojo-zd/helm-crabstick/pkg/helm/config"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/repository"
+	"github.com/mojo-zd/helm-crabstick/pkg/manager"
 	"github.com/mojo-zd/helm-crabstick/pkg/util/file"
 )
 
@@ -27,11 +28,11 @@ func initialize(cfg appconf.Config) {
 	repo.CacheIndex()
 }
 
-func routes() []router.Router {
+func routes(mgr manager.Manager) []router.Router {
 	cfg := newAppConfig()
 	routers := []router.Router{
 		chart.NewRouter(cfg),
-		release.NewRouter(cfg),
+		release.NewRouter(cfg, mgr),
 	}
 	return routers
 }
@@ -39,9 +40,10 @@ func routes() []router.Router {
 func newAPIConfig() *server.Config {
 	cfg := config.GetConfig()
 	return &server.Config{
-		Address:    cfg.Address,
-		Middleware: cfg.Middlewares,
-		JWTSecret:  cfg.SecretKey,
+		Address:      cfg.Address,
+		Middleware:   cfg.Middlewares,
+		JWTSecret:    cfg.SecretKey,
+		KeystoneAddr: cfg.Auth.URL,
 	}
 }
 

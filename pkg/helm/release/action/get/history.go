@@ -12,7 +12,7 @@ import (
 )
 
 func (g *getter) History(name, namespace string) (ReleaseHistory, error) {
-	configuration := storage.ActionConfiguration(g.client, g.config, namespace)
+	configuration := storage.ActionConfiguration(*g.cluster, g.config, namespace)
 	client := action.NewHistory(configuration)
 	client.Max = MaxHistory
 	return g.history(client, name)

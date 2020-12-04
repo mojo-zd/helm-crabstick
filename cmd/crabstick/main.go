@@ -2,13 +2,15 @@ package main
 
 import (
 	"github.com/mojo-zd/helm-crabstick/api/server"
+	"github.com/mojo-zd/helm-crabstick/pkg/manager"
 	"github.com/sirupsen/logrus"
 )
 
 func main() {
 	initialize(newAppConfig())
-	srv := server.New(newAPIConfig())
-	srv.InitRouter(routes()...)
+	apiConf := newAPIConfig()
+	srv := server.New(apiConf)
+	srv.InitRouter(routes(manager.NewClusterManager(apiConf.KeystoneAddr))...)
 
 	serveAPIWait := make(chan error)
 	go srv.Wait(serveAPIWait)

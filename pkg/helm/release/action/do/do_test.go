@@ -378,15 +378,15 @@ func TestDelete(t *testing.T) {
 }
 
 func getClient(t *testing.T) kubernetes.Interface {
-	restConf, err := conf.ConfigFlags().ToRESTConfig()
-	if err != nil {
-		t.Fatal(err)
-		return nil
-	}
-	client, err := kubernetes.NewForConfig(restConf)
-	if err != nil {
-		t.Fatal(err)
-	}
+	//restConf, err := conf.ConfigFlags().ToRESTConfig()
+	//if err != nil {
+	//	t.Fatal(err)
+	//	return nil
+	//}
+	//client, err := kubernetes.NewForConfig(restConf)
+	//if err != nil {
+	//	t.Fatal(err)
+	//}
 
-	return client
+	return nil
 }

@@ -19,7 +19,7 @@ func NewSetting(config config.Config) *cli.EnvSettings {
 		return setting
 	}
 
-	setting.KubeConfig = config.KubeConf
+	//setting.KubeConfig = config.KubeConf
 	setting.KubeContext = config.KubeContext
 	setting.KubeToken = config.KubeToken
 	setting.RepositoryCache = config.Repository.Cache

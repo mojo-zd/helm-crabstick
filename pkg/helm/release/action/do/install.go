@@ -123,12 +123,19 @@ func checkIfInstallable(ch *chart.Chart) error {
 }
 
 func (d *doer) buildActionConfiguration(namespace string) *action.Configuration {
-	secrets := driver.NewSecrets(d.client.CoreV1().Secrets(namespace))
+	secrets := driver.NewSecrets(d.cluster.Client.CoreV1().Secrets(namespace))
 	secrets.Log = logrus.Infof
 	store := storage.Init(secrets)
 
 	actionConfig := new(action.Configuration)
-	config, _ := d.cfg.ConfigFlags().ToRESTConfig()
+	config := &rest.Config{
+		Host: d.cluster.ApiAddress,
+		TLSClientConfig: rest.TLSClientConfig{
+			CAData:   []byte(d.cluster.CAData),
+			CertData: []byte(d.cluster.CertData),
+			KeyData:  []byte(d.cluster.KeyData),
+		},
+	}
 	restClientGetter := NewConfigFlagsFromCluster(namespace, config)
 	actionConfig.RESTClientGetter = restClientGetter
 	actionConfig.KubeClient = kube.New(restClientGetter)

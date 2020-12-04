@@ -34,6 +34,9 @@ type Config struct {
 		MaxHistory     string `mapstructure:"maxHistory"`
 		StorageBackend string `mapstructure:"storageBackend"`
 	}
+	Auth struct {
+		URL string `mapstructure:"url"`
+	}
 	RunMode string `mapstructure:"runMode"` // dev or prod
 }
 

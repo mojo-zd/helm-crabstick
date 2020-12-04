@@ -37,7 +37,7 @@ func GetCacheDir() string {
 func GetCacheHome() string {
 	cacheDir := os.Getenv(CacheHomeEnvVar)
 	if strings.TrimSpace(cacheDir) == "" {
-		cacheDir = path.Join(homeDir(), ".cache", lp)
+		cacheDir = path.Join(HomeDir(), ".cache", lp)
 	}
 	return cacheDir
 }
@@ -46,7 +46,7 @@ func GetCacheHome() string {
 func GetConfigDir() string {
 	configDir := os.Getenv(ConfigHomeEnvVar)
 	if strings.TrimSpace(configDir) == "" {
-		configDir = path.Join(homeDir(), ".config", lp)
+		configDir = path.Join(HomeDir(), ".config", lp)
 	}
 	return configDir
 }
@@ -76,7 +76,7 @@ func CreateHelmDirIfNotExist() error {
 	return nil
 }
 
-func homeDir() string {
+func HomeDir() string {
 	if runtime.GOOS == "windows" {
 		home := os.Getenv("HOME")
 		homeDriveHomePath := ""

@@ -8,7 +8,7 @@ import (
 
 // Get get release
 func (g *getter) Get(name, namespace string) (*release.Release, error) {
-	cfg := storage.ActionConfiguration(g.client, g.config, namespace)
+	cfg := storage.ActionConfiguration(*g.cluster, g.config, namespace)
 	get := ac.NewGet(cfg)
 	return get.Run(name)
 }
