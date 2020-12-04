@@ -15,7 +15,12 @@ type appManager struct {
 	ReleaseGetter rlget.Getter
 }
 
-// NewAppManager ...
+// NewChartManager only support chart operator
+func NewChartManager(cfg config.Config) *appManager {
+	return &appManager{ChartGetter: chget.NewGetter(cfg)}
+}
+
+// NewAppManager support all operator of chart、release
 func NewAppManager(cfg config.Config, cluster *manager.Cluster) *appManager {
 	return &appManager{
 		ChartGetter:   chget.NewGetter(cfg),

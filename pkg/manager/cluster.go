@@ -2,7 +2,6 @@ package manager
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -25,7 +24,9 @@ const (
 	keyFile  = "client.key"
 )
 
-var authPath = fmt.Sprintf("%s/.certs/clusters", file.HomeDir())
+var (
+	authPath = path.Join(file.HomeDir(), ".certs/clusters")
+)
 
 type Manager interface {
 	// instance kubernetes clientset
