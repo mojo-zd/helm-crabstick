@@ -1,16 +1,16 @@
 package manager
 
 import (
-	"context"
 	"testing"
 
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/tools/clientcmd"
+	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
 var (
-	clusterUUID = "8b891540-650a-4f2a-839f-82e8b2cc222e"
+	clusterUUID = "2a500a87-0814-48de-8990-4f0728cbfb92"
 	keystone    = "http://10.60.41.127:35357/v3"
-	token       = "gAAAAABfyEKUWsORyjwKYTa5ZT_jH0_xITTuf4d0R7jPmymO0JTB7JAWVxHwTU7Ys4TWeTLXGdn5qg0iJcIzPAKxI8n96UddWslP9hoizF8jFJ4bVB2hIE5JuTlqC-YxVRrwg6V25280BgP71L-mCxKDICXzz_kQwA"
+	token       = "gAAAAABfyanw-peRBiMqtf8QpWtPPGiZqiu4SfLHPksEW85uVEGsOz5KGJnFqQjKeoAtwnlQZXPY35AR_I2bVTYuKv5vefKsx8H7K0erE1b2pAIWDwfqHPxNcafQyASUbmkOYpzqUT9PKy49qgIjyts_K-19R_SOkA"
 )
 
 func TestClusterManager(t *testing.T) {
@@ -19,9 +19,38 @@ func TestClusterManager(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	namespaces, err := cluster.Client.CoreV1().Namespaces().List(context.Background(), v1.ListOptions{})
-	if err != nil {
-		t.Fatal("can't list namespaces", err)
+	if _, err = writeKubeconfigFile(cluster); err != nil {
+		t.Fatal(err)
 	}
-	t.Log(namespaces.Items)
+}
+
+var (
+	globalKubeCfg      = clientcmdapi.NewConfig()
+	globalKubeconfFile = "globalkube.conf.yaml"
+)
+
+func writeKubeconfigFile(cpy Cluster) (bool, error) {
+	clusterName := cpy.Name + "-cluster"
+	authName := cpy.Name + "-auth"
+
+	if _, ok := globalKubeCfg.Contexts[cpy.Name]; ok &&
+		cpy.ApiAddress == globalKubeCfg.Clusters[clusterName].Server &&
+		cpy.CAData == string(globalKubeCfg.Clusters[clusterName].CertificateAuthorityData) &&
+		cpy.CertData == string(globalKubeCfg.AuthInfos[authName].ClientCertificateData) &&
+		cpy.KeyData == string(globalKubeCfg.AuthInfos[authName].ClientKeyData) {
+		return false, nil
+	}
+	globalKubeCfg.Clusters[clusterName] = clientcmdapi.NewCluster()
+	globalKubeCfg.Clusters[clusterName].Server = cpy.ApiAddress
+	globalKubeCfg.Clusters[clusterName].CertificateAuthorityData = []byte(cpy.CAData)
+
+	globalKubeCfg.AuthInfos[authName] = clientcmdapi.NewAuthInfo()
+	globalKubeCfg.AuthInfos[authName].ClientCertificateData = []byte(cpy.CertData)
+	globalKubeCfg.AuthInfos[authName].ClientKeyData = []byte(cpy.KeyData)
+
+	globalKubeCfg.Contexts[cpy.Name] = clientcmdapi.NewContext()
+	globalKubeCfg.Contexts[cpy.Name].Cluster = clusterName
+	globalKubeCfg.Contexts[cpy.Name].AuthInfo = authName
+	globalKubeCfg.CurrentContext = clusterName
+	return true, clientcmd.WriteToFile(*globalKubeCfg, globalKubeconfFile)
 }

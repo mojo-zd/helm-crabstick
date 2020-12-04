@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"net/url"
 	pt "path"
 
@@ -68,7 +69,9 @@ func (k *keystone) Sign(magnumURL, cluster string) (string, string, error) {
 		logrus.Errorf("request[%s] occur exception, method: %s, err:%s", u.String(), req.Method, err.Error())
 		return privateKey, cert, err
 	}
-
+	if resp.StatusCode() >= http.StatusBadRequest {
+		return privateKey, cert, errors.New(string(resp.Body()))
+	}
 	cer := Certificate{}
 	if err = json.Unmarshal(resp.Body(), &cer); err != nil {
 		logrus.Errorf("can't unmarshal to Certificate, body:%s, err:%s", resp.Body(), err.Error())
@@ -90,7 +93,9 @@ func (k *keystone) CA(magnumURL, cluster string) (Certificate, error) {
 		logrus.Errorf("request[%s] occur exception, method: %s, err:%s", u.String(), req.Method, err.Error())
 		return out, err
 	}
-
+	if resp.StatusCode() >= http.StatusBadRequest {
+		return out, errors.New(string(resp.Body()))
+	}
 	if err = json.Unmarshal(resp.Body(), &out); err != nil {
 		logrus.Errorf("can't unmarshal to Certificate, body:%s, err:%s", resp.Body(), err.Error())
 		return out, err
@@ -111,7 +116,9 @@ func (k *keystone) Endpoints(queries map[string]string) (Endpoints, error) {
 		logrus.Errorf("request[%s] occur exception, method: %s, err:%s", u.String(), req.Method, err.Error())
 		return out, err
 	}
-
+	if resp.StatusCode() >= http.StatusBadRequest {
+		return out, errors.New(string(resp.Body()))
+	}
 	if err = json.Unmarshal(resp.Body(), &out); err != nil {
 		logrus.Errorf("can't unmarshal to Endpoints, body:%s, err:%s", resp.Body(), err.Error())
 		return out, err
@@ -130,6 +137,9 @@ func (k *keystone) Service(name string) (Service, error) {
 	if err != nil {
 		logrus.Errorf("request[%s] occur exception, method: %s, err:%s", u.String(), req.Method, err.Error())
 		return Service{}, err
+	}
+	if resp.StatusCode() >= http.StatusBadRequest {
+		return Service{}, errors.New(string(resp.Body()))
 	}
 	out := Services{}
 	if err = json.Unmarshal(resp.Body(), &out); err != nil {
@@ -155,6 +165,9 @@ func (k *keystone) Cluster(magnumURL, uuid string) (Cluster, error) {
 	if err != nil {
 		logrus.Errorf("request[%s] occur exception, method: %s, err:%s", u.String(), req.Method, err.Error())
 		return out, err
+	}
+	if resp.StatusCode() >= http.StatusBadRequest {
+		return out, errors.New(string(resp.Body()))
 	}
 	if err = json.Unmarshal(resp.Body(), &out); err != nil {
 		logrus.Errorf("can't unmarshal to Cluster, body:%s, err:%s", resp.Body(), err.Error())

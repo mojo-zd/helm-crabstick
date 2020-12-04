@@ -35,6 +35,7 @@ type Manager interface {
 
 type Cluster struct {
 	UUID       string
+	Name       string
 	ApiAddress string // e.g. ip:port
 	CAFile     string
 	CertFile   string
@@ -105,6 +106,7 @@ func (mgr *clusterManager) Client(clusterUUID, token string) (Cluster, error) {
 		return out, err
 	}
 	out.UUID = cluster.UUID
+	out.Name = cluster.Name
 	out.CAData = ca.PEM
 	out.CertData = cert
 	out.KeyData = privateKey
