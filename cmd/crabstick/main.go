@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	initialize(newAppConfig())
+	initialize()
 	apiConf := newAPIConfig()
 	srv := server.New(apiConf)
 	srv.InitRouter(routes(manager.NewClusterManager(apiConf.KeystoneAddr))...)

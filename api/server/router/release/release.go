@@ -3,10 +3,9 @@ package release
 import (
 	"net/http"
 
-	"github.com/mojo-zd/helm-crabstick/pkg/manager"
-
 	"github.com/mojo-zd/helm-crabstick/api/server/router"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
+	"github.com/mojo-zd/helm-crabstick/pkg/manager"
 )
 
 type releaseRouter struct {

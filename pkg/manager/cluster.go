@@ -29,6 +29,7 @@ var (
 )
 
 type Manager interface {
+	Token(token string) (auth.Token, error)
 	// instance kubernetes clientset
 	Client(clusterUUID, token string) (Cluster, error)
 }
@@ -57,6 +58,11 @@ func NewClusterManager(keystoneAddr string) Manager {
 		keystone: keystoneAddr,
 		cache:    make(map[string]*Cluster),
 	}
+}
+
+// Token get user information e.g. domain、project and so on
+func (mgr *clusterManager) Token(token string) (auth.Token, error) {
+	return auth.NewKeystone(mgr.keystone, token).Token()
 }
 
 // Client create client witch interacts with kubernetes

@@ -20,6 +20,7 @@ const (
 	endpoints    = "/endpoints"
 	certificates = "/certificates"
 	clusters     = "/clusters"
+	authtoken    = "/auth/tokens"
 )
 
 type keystone struct {
@@ -154,6 +155,7 @@ func (k *keystone) Service(name string) (Service, error) {
 	return out.Services[0], nil
 }
 
+// Cluster kubernetes credentials to interactive with kubernetes
 func (k *keystone) Cluster(magnumURL, uuid string) (Cluster, error) {
 	out := Cluster{}
 	req := resty.New().R()
@@ -174,6 +176,32 @@ func (k *keystone) Cluster(magnumURL, uuid string) (Cluster, error) {
 		return out, err
 	}
 	return out, nil
+}
+
+// Token get detail token
+func (k *keystone) Token() (Token, error) {
+	tk := Token{}
+	req := resty.New().R()
+	// set header info for request
+	k.setAuthTokens(req)
+	u := k.combine([]string{authtoken}, nil)
+	logrus.Debugln("request url is", u.String())
+	resp, err := req.Get(u.String())
+	if err != nil {
+		logrus.Errorf("request[%s] occur exception, method: %s, err:%s", u.String(), req.Method, err.Error())
+		return tk, err
+	}
+	if resp.StatusCode() >= http.StatusBadRequest {
+		return tk, errors.New(string(resp.Body()))
+	}
+	out := struct {
+		Token Token
+	}{}
+	if err = json.Unmarshal(resp.Body(), &out); err != nil {
+		logrus.Errorf("can't unmarshal to Token, body:%s, err:%s", resp.Body(), err.Error())
+		return tk, err
+	}
+	return out.Token, nil
 }
 
 func (k *keystone) combine(paths []string, queries map[string]string) *url.URL {
@@ -210,6 +238,11 @@ func (k *keystone) combinePath(path ...string) *url.URL {
 }
 
 func (k *keystone) setAuth(request *resty.Request) *keystone {
+	request.SetHeader("X-Auth-Token", k.token)
+	return k
+}
+
+func (k *keystone) setAuthTokens(request *resty.Request) *keystone {
 	request.SetHeader("X-Auth-Token", k.token)
 	request.SetHeader("X-Subject-Token", k.token)
 	return k

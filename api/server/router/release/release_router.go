@@ -2,11 +2,13 @@ package release
 
 import (
 	"github.com/kataras/iris/v12/context"
+	"github.com/mojo-zd/helm-crabstick/pkg/auth"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/parser/release"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/types"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
 	mg "github.com/mojo-zd/helm-crabstick/pkg/manager"
+	"github.com/mojo-zd/helm-crabstick/service"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -50,12 +52,16 @@ func (r *releaseRouter) install(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	token, err := r.token(ctx)
+	if err != nil {
+		return err
+	}
 	createOpts := types.CreateOptions{}
 	if err := ctx.ReadJSON(&createOpts); err != nil {
 		return err
 	}
 
-	rls, err := manager.NewAppManager(r.cfg, &cluster).ReleaseDoer.Install(createOpts)
+	rls, err := service.NewReleaseService().Create(r.cfg, cluster, token, createOpts)
 	if err != nil {
 		return err
 	}
@@ -115,4 +121,8 @@ func (r *releaseRouter) getCluster(ctx context.Context) (mg.Cluster, error) {
 	cluster := ctx.Params().Get("cluster_uuid")
 	token := ctx.GetHeader("TOKEN")
 	return r.clusterMgr.Client(cluster, token)
+}
+
+func (r *releaseRouter) token(ctx context.Context) (auth.Token, error) {
+	return r.clusterMgr.Token(ctx.GetHeader("TOKEN"))
 }

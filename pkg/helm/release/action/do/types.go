@@ -12,7 +12,7 @@ type Doer interface {
 	// Install install chart
 	Install(createOpt types.CreateOptions) (*release.Release, error)
 
-	// Delete uninstall release
+	// DeleteBathes uninstall release
 	Delete(name, namespace string) (*release.UninstallReleaseResponse, error)
 
 	// Upgrade upgrade release

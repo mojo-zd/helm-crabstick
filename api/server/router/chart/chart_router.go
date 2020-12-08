@@ -22,7 +22,7 @@ func (c *chartRouter) charts(ctx context.Context) error {
 }
 
 func (c *chartRouter) versions(ctx context.Context) error {
-	chart := ctx.Params().Get("name")
+	chart := ctx.Params().GetDecoded("name")
 	_, err := ctx.JSON(manager.NewChartManager(c.cfg).ChartGetter.Versions(chart))
 	return err
 }
@@ -33,7 +33,7 @@ func (c *chartRouter) category(ctx context.Context) error {
 }
 
 func (c *chartRouter) show(ctx context.Context) error {
-	name := ctx.Params().Get("name")
+	name := ctx.Params().GetDecoded("name")
 	_, err := ctx.JSON(manager.NewChartManager(c.cfg).
 		ChartGetter.Show(name, "", action.ShowReadme))
 	return err

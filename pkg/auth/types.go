@@ -50,3 +50,25 @@ type Cluster struct {
 	HealthStatus string `json:"health_status"`
 	ApiAddress   string `json:"api_address"`
 }
+
+type Token struct {
+	IsAdmin bool    `json:"is_admin"`
+	Project Project `json:"project"`
+	User    User    `json:"user"`
+}
+
+type Project struct {
+	Domain Domain `json:"domain"`
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+}
+
+type Domain struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type User struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}

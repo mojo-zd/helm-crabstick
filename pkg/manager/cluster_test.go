@@ -8,9 +8,9 @@ import (
 )
 
 var (
-	clusterUUID = "2a500a87-0814-48de-8990-4f0728cbfb92"
+	clusterUUID = "7d314043-1eb2-43f4-93d3-730091654491"
 	keystone    = "http://10.60.41.127:35357/v3"
-	token       = "gAAAAABfyanw-peRBiMqtf8QpWtPPGiZqiu4SfLHPksEW85uVEGsOz5KGJnFqQjKeoAtwnlQZXPY35AR_I2bVTYuKv5vefKsx8H7K0erE1b2pAIWDwfqHPxNcafQyASUbmkOYpzqUT9PKy49qgIjyts_K-19R_SOkA"
+	token       = "gAAAAABf0CCeY1aDY_Y7AH9QA-SI52LZt3msKEf_-_0ieUTvmLFTrYeK8Vdj6XwCL9PCRPBSjoGihC4eNzkLeGWyFo0yBIxLzQ6y-Am9TQQPpHjBiRdrlYe5D48c8Hev7_b3Uf2V1O694OrnCBYbpp_VEYbHa8E7kA"
 )
 
 func TestClusterManager(t *testing.T) {

@@ -7,7 +7,7 @@ import (
 var (
 	clusterUUID = "8b891540-650a-4f2a-839f-82e8b2cc222e"
 	magnum      = "magnum"
-	stoneCli    = NewKeystone("http://10.60.41.127:35357/v3", "gAAAAABfyEKUWsORyjwKYTa5ZT_jH0_xITTuf4d0R7jPmymO0JTB7JAWVxHwTU7Ys4TWeTLXGdn5qg0iJcIzPAKxI8n96UddWslP9hoizF8jFJ4bVB2hIE5JuTlqC-YxVRrwg6V25280BgP71L-mCxKDICXzz_kQwA")
+	stoneCli    = NewKeystone("http://10.60.41.127:35357/v3", "gAAAAABfzyGfPEinFN3F29BPrMlpotvYsboB9RtZpBSbDNujUaVMArB5ccra_zIEb8fA1WY7kAYEbenJPNbMHJWx84kWH3DxocGR1Ku7oJJEkhEiYQzPNEL7jTKSRWgkVROWg8WGL0mX4kjAbhHUDW-9mJnIi4g_UKk4CQu8LYBaQopn4B0DKEI")
 )
 
 func TestCluster(t *testing.T) {
@@ -77,4 +77,12 @@ func TestCA(t *testing.T) {
 		t.Fatal("sign client certificate failed", err)
 	}
 	t.Log("root ca", cert, ",client private key", privateKey, ",client ca", ca)
+}
+
+func TestToken(t *testing.T) {
+	token, err := stoneCli.Token()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(token)
 }

@@ -111,7 +111,7 @@ func (s *Server) serveAPI() error {
 	go func() {
 		var err error
 		logrus.Infof("server listen on %s", s.cfg.Address)
-		err = s.app.Run(iris.Addr(s.cfg.Address))
+		err = s.app.Run(iris.Addr(s.cfg.Address), iris.WithPathEscape)
 		chError <- err
 	}()
 	err := <-chError

@@ -37,6 +37,16 @@ type Config struct {
 	Auth struct {
 		URL string `mapstructure:"url"`
 	}
+	Database struct {
+		Host        string `mapstructure:"host"`
+		Port        string `mapstructure:"port"`
+		Username    string `mapstructure:"username"`
+		Password    string `mapstructure:"password"`
+		Schema      string `mapstructure:"schema"`
+		MaxConn     int    `mapstructure:"maxConn"`
+		MaxIdleConn int    `mapstructure:"maxIdleConn"`
+		MaxIdleTime int    `mapstructure:"maxIdleTime"`
+	}
 	RunMode string `mapstructure:"runMode"` // dev or prod
 }
 

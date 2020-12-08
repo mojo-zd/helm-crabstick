@@ -1,6 +1,7 @@
 package get
 
 import (
+	"path"
 	"time"
 
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
@@ -14,7 +15,7 @@ func (g *getter) Show(name, version string, output action.ShowOutputFormat) stri
 	}
 	client := action.NewShow(output)
 	client.OutputFormat = output
-	out, _ := g.run(name, version, client)
+	out, _ := g.run(path.Join(g.cfg.Repository.Name, name), version, client)
 	return out
 }
 
