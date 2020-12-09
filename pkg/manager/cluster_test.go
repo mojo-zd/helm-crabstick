@@ -51,6 +51,6 @@ func writeKubeconfigFile(cpy Cluster) (bool, error) {
 	globalKubeCfg.Contexts[cpy.Name] = clientcmdapi.NewContext()
 	globalKubeCfg.Contexts[cpy.Name].Cluster = clusterName
 	globalKubeCfg.Contexts[cpy.Name].AuthInfo = authName
-	globalKubeCfg.CurrentContext = clusterName
+	globalKubeCfg.CurrentContext = cpy.Name
 	return true, clientcmd.WriteToFile(*globalKubeCfg, globalKubeconfFile)
 }

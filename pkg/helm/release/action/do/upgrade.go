@@ -45,9 +45,9 @@ func (d *doer) runUpgrade(opts types.UpgradeOptions, client *action.Upgrade) (*r
 		logrus.Warn("This chart is deprecated")
 	}
 
-	vals, err := util.GetValues(opts.Values)
-	if err != nil {
-		return nil, err
+	vals := make(map[string]interface{})
+	if opts.Values != nil {
+		vals = opts.Values
 	}
 	rel, err := client.Run(opts.Name, ch, vals)
 	if err != nil {

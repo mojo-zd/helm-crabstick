@@ -1,4 +1,4 @@
-package release
+package parser
 
 import (
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"

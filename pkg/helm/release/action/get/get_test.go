@@ -11,7 +11,6 @@ import (
 	"github.com/mojo-zd/helm-crabstick/pkg/manager"
 
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
-	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager/kube"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
 	"k8s.io/client-go/kubernetes"
 )
@@ -130,7 +129,7 @@ func TestReleaseList(t *testing.T) {
 		t.Fatal("new reset config", err)
 	}
 	cluster.Client = cli
-	rls, err := NewGetter(conf, cluster, kube.NewApiManager(cluster.Client)).List("", util.ListOptions{})
+	rls, err := NewGetter(conf, cluster, manager.NewApiManager(cluster.Client)).List("", util.ListOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}

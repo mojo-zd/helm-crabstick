@@ -2,7 +2,6 @@ package get
 
 import (
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/config"
-	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager/kube"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
 	"github.com/mojo-zd/helm-crabstick/pkg/manager"
 	"helm.sh/helm/v3/pkg/release"
@@ -22,11 +21,11 @@ type Getter interface {
 type getter struct {
 	cluster *manager.Cluster
 	config  config.Config
-	manager *kube.ApiManager
+	manager *manager.ApiManager
 }
 
 // NewGetter ...
-func NewGetter(config config.Config, cluster *manager.Cluster, mgr *kube.ApiManager) Getter {
+func NewGetter(config config.Config, cluster *manager.Cluster, mgr *manager.ApiManager) Getter {
 	return &getter{
 		config:  config,
 		cluster: cluster,

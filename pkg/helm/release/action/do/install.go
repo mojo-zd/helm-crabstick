@@ -27,7 +27,7 @@ func (d *doer) Install(createOpts types.CreateOptions) (*release.Release, error)
 	chartOpts := action.ChartPathOptions{Version: createOpts.Version}
 	install.ChartPathOptions = chartOpts
 	chartObj, err := d.installPre(install, setting, os.Stdout, createOpts.Name, createOpts.Chart)
-	if createOpts.Options.Annotation != nil {
+	if chartObj != nil && createOpts.Options.Annotation != nil {
 		for key, value := range createOpts.Options.Annotation {
 			chartObj.Metadata.Annotations[key] = value
 		}
@@ -35,11 +35,11 @@ func (d *doer) Install(createOpts types.CreateOptions) (*release.Release, error)
 	if err != nil {
 		return nil, err
 	}
-
-	val, err := util.GetValues(createOpts.Values)
-	if err != nil {
-		return nil, err
+	val := make(map[string]interface{})
+	if createOpts.Values != nil {
+		val = createOpts.Values
 	}
+
 	return install.Run(chartObj, val)
 }
 

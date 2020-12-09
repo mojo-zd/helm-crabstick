@@ -4,12 +4,14 @@ import (
 	"github.com/kataras/iris/v12/context"
 	"github.com/mojo-zd/helm-crabstick/pkg/auth"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/manager"
-	"github.com/mojo-zd/helm-crabstick/pkg/helm/parser/release"
+	"github.com/mojo-zd/helm-crabstick/pkg/helm/parser"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/types"
-	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
 	mg "github.com/mojo-zd/helm-crabstick/pkg/manager"
-	"github.com/mojo-zd/helm-crabstick/service"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
+var (
+	defNamespace = "default"
 )
 
 func (r *releaseRouter) requestID(ctx context.Context) string {
@@ -21,17 +23,23 @@ func (r *releaseRouter) releases(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	releases, err := manager.NewAppManager(r.cfg, &cluster).ReleaseGetter.List("", util.ListOptions{})
+
+	token, err := r.token(ctx)
 	if err != nil {
 		return err
 	}
-	_, err = ctx.JSON(release.ToReleases(releases))
+
+	releases, err := r.releaseService.List(r.cfg, token, cluster)
+	if err != nil {
+		return err
+	}
+	_, err = ctx.JSON(releases)
 	return err
 }
 
 func (r *releaseRouter) release(ctx context.Context) error {
 	name := ctx.Params().Get("name")
-	namespace := ctx.URLParam("namespace")
+	namespace := ctx.URLParamDefault("namespace", defNamespace)
 	cluster, err := r.getCluster(ctx)
 	if err != nil {
 		return err
@@ -43,7 +51,7 @@ func (r *releaseRouter) release(ctx context.Context) error {
 	}
 
 	resources := mgr.ReleaseGetter.Resources(name, namespace, rls, v1.ListOptions{})
-	_, err = ctx.JSON(release.Profound{Release: rls, Resource: resources})
+	_, err = ctx.JSON(parser.Profound{Release: rls, Resource: resources})
 	return err
 }
 
@@ -61,7 +69,7 @@ func (r *releaseRouter) install(ctx context.Context) error {
 		return err
 	}
 
-	rls, err := service.NewReleaseService().Create(r.cfg, cluster, token, createOpts)
+	rls, err := r.releaseService.Create(r.cfg, cluster, token, createOpts)
 	if err != nil {
 		return err
 	}
@@ -75,12 +83,12 @@ func (r *releaseRouter) uninstall(ctx context.Context) error {
 		return err
 	}
 	name := ctx.Params().Get("name")
-	namespace := ctx.URLParam("namespace")
-	resp, err := manager.NewAppManager(r.cfg, &cluster).ReleaseDoer.Delete(name, namespace)
+	namespace := ctx.URLParamDefault("namespace", defNamespace)
+	err = r.releaseService.Delete(r.cfg, cluster, name, namespace)
 	if err != nil {
 		return err
 	}
-	_, err = ctx.JSON(resp)
+	_, err = ctx.JSON(map[string]interface{}{})
 	return err
 }
 
@@ -108,7 +116,7 @@ func (r *releaseRouter) history(ctx context.Context) error {
 		return err
 	}
 	name := ctx.Params().Get("name")
-	namespace := ctx.URLParam("namespace")
+	namespace := ctx.URLParamDefault("namespace", defNamespace)
 	history, err := manager.NewAppManager(r.cfg, &cluster).ReleaseGetter.History(name, namespace)
 	if err != nil {
 		return err
