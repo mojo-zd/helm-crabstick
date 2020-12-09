@@ -44,8 +44,7 @@ func (r *ReleaseService) Create(
 	if err = r.releaseDao.Create(release); err != nil {
 		return nil, err
 	}
-	rls, err := manager.NewAppManager(cfg, &cluster).ReleaseDoer.Install(createOpts)
-	return rls, nil
+	return manager.NewAppManager(cfg, &cluster).ReleaseDoer.Install(createOpts)
 }
 
 func buildRelease(token auth.Token, createOpts types.CreateOptions) *db.Release {

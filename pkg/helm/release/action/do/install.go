@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 
+	stg "github.com/mojo-zd/helm-crabstick/pkg/helm/storage"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/types"
 	"github.com/mojo-zd/helm-crabstick/pkg/helm/util"
 	"github.com/pkg/errors"
@@ -14,18 +15,13 @@ import (
 	"helm.sh/helm/v3/pkg/cli"
 	"helm.sh/helm/v3/pkg/downloader"
 	"helm.sh/helm/v3/pkg/getter"
-	"helm.sh/helm/v3/pkg/kube"
 	"helm.sh/helm/v3/pkg/release"
-	"helm.sh/helm/v3/pkg/storage"
-	"helm.sh/helm/v3/pkg/storage/driver"
-	"k8s.io/cli-runtime/pkg/genericclioptions"
-	"k8s.io/client-go/rest"
 )
 
 // Install install chart
 func (d *doer) Install(createOpts types.CreateOptions) (*release.Release, error) {
 	setting := util.NewSetting(d.cfg)
-	cfg := d.buildActionConfiguration(createOpts.Namespace)
+	cfg := stg.ActionConfiguration(*d.cluster, d.cfg, createOpts.Namespace)
 	install := action.NewInstall(cfg)
 	install.Namespace = createOpts.Namespace
 	chartOpts := action.ChartPathOptions{Version: createOpts.Version}
@@ -74,6 +70,7 @@ func (d *doer) installPre(
 	}
 
 	if err := checkIfInstallable(chartRequested); err != nil {
+		logrus.Errorf("check installable failed, err:%s", err.Error())
 		return nil, err
 	}
 
@@ -120,47 +117,4 @@ func checkIfInstallable(ch *chart.Chart) error {
 		return nil
 	}
 	return errors.Errorf("%s charts are not installable", ch.Metadata.Type)
-}
-
-func (d *doer) buildActionConfiguration(namespace string) *action.Configuration {
-	secrets := driver.NewSecrets(d.cluster.Client.CoreV1().Secrets(namespace))
-	secrets.Log = logrus.Infof
-	store := storage.Init(secrets)
-
-	actionConfig := new(action.Configuration)
-	config := &rest.Config{
-		Host: d.cluster.ApiAddress,
-		TLSClientConfig: rest.TLSClientConfig{
-			CAData:   []byte(d.cluster.CAData),
-			CertData: []byte(d.cluster.CertData),
-			KeyData:  []byte(d.cluster.KeyData),
-		},
-	}
-	restClientGetter := NewConfigFlagsFromCluster(namespace, config)
-	actionConfig.RESTClientGetter = restClientGetter
-	actionConfig.KubeClient = kube.New(restClientGetter)
-	actionConfig.Releases = store
-	actionConfig.Log = logrus.Infof
-	return actionConfig
-}
-
-// NewConfigFlagsFromCluster returns ConfigFlags with default values set from within cluster.
-func NewConfigFlagsFromCluster(namespace string, clusterConfig *rest.Config) *genericclioptions.ConfigFlags {
-	impersonateGroup := []string{}
-	insecure := false
-
-	// CertFile and KeyFile must be nil for the BearerToken to be used for authentication and authorization instead of the pod's service account.
-	return &genericclioptions.ConfigFlags{
-		Insecure:         &insecure,
-		Timeout:          stringptr("0"),
-		Namespace:        stringptr(namespace),
-		APIServer:        stringptr(clusterConfig.Host),
-		CAFile:           stringptr(clusterConfig.CAFile),
-		BearerToken:      stringptr(clusterConfig.BearerToken),
-		ImpersonateGroup: &impersonateGroup,
-	}
-}
-
-func stringptr(val string) *string {
-	return &val
 }
