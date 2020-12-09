@@ -34,7 +34,8 @@ func (c *chartRouter) category(ctx context.Context) error {
 
 func (c *chartRouter) show(ctx context.Context) error {
 	name := ctx.Params().GetDecoded("name")
+	version := ctx.URLParam("version")
 	_, err := ctx.JSON(manager.NewChartManager(c.cfg).
-		ChartGetter.Show(name, "", action.ShowReadme))
+		ChartGetter.Show(name, version, action.ShowReadme))
 	return err
 }
